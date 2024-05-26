@@ -43,7 +43,7 @@ class ExamplePipeline : public Runner {
 
  private:
     std::shared_ptr<Modules::Cast<IT, F32>> inputCast;
-    std::shared_ptr<Modules::Gather<F32, F32>> gather;
+    std::shared_ptr<Modules::Gather<Device::CUDA, F32, Device::CUDA, F32>> gather;
     std::shared_ptr<Modules::Cast<F32, OT>> outputCast;
 
     Duet<ArrayTensor<Device::CUDA, IT>> inputBuffer;

@@ -9,7 +9,7 @@ namespace Blade::Modules {
 // TODO: Add support for input with fixed axis larger than one.
 // MAYDO: Add built-in casting, if necessary.
 // MAYDO: Add support for types different than ArrayTensor, if necessary.
-template<typename IT, typename OT>
+template<Device ID, typename IT, Device OD, typename OT>
 class BLADE_API Gather : public Module {
  public:
     // Configuration
@@ -29,20 +29,20 @@ class BLADE_API Gather : public Module {
     // Input
 
     struct Input {
-        const ArrayTensor<Device::CUDA, IT>& buf;
+        const ArrayTensor<ID, IT>& buf;
     };
 
-    constexpr const ArrayTensor<Device::CUDA, IT>& getInputBuffer() const {
+    constexpr const ArrayTensor<ID, IT>& getInputBuffer() const {
         return this->input.buf;
     }
 
     // Output 
 
     struct Output {
-        ArrayTensor<Device::CUDA, OT> buf;
+        ArrayTensor<OD, OT> buf;
     };
 
-    constexpr const ArrayTensor<Device::CUDA, OT>& getOutputBuffer() const {
+    constexpr const ArrayTensor<OD, OT>& getOutputBuffer() const {
         return this->output.buf;
     }
 

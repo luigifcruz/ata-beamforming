@@ -129,7 +129,7 @@ class Benchmark : public Runner {
  private:
     std::shared_ptr<ModeB> modeB;
     std::shared_ptr<ModeH> modeH;
-    std::shared_ptr<Modules::Gather<CF32, CF32>> gather;
+    std::shared_ptr<Modules::Gather<Device::CUDA, CF32, Device::CUDA, CF32>> gather;
 
     Duet<Tensor<Device::CPU, F64>> inputDut;
     Duet<Tensor<Device::CPU, F64>> inputJulianDate;
