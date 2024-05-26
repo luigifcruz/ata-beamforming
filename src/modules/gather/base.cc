@@ -9,14 +9,19 @@
 
 namespace Blade::Modules {
 
-template<typename IT, typename OT>
-Gather<IT, OT>::Gather(const Config& config,
+template<Device ID, typename IT, Device OD, typename OT>
+Gather<ID, IT, OD, OT>::Gather(const Config& config,
                        const Input& input,
                        const Stream& stream)
         : Module(gather_program),
           config(config),
           input(input),
           computeRatio(config.multiplier) {
+    if (ID==OD && ID==Device::CPU) {
+        BL_FATAL("CPU performed Gather is not implemented yet.");
+        BL_CHECK_THROW(Result::ERROR);
+    }
+
     if constexpr (!std::is_same<IT, OT>::value) {
         BL_FATAL("Input ({}) and output ({}) types aren't the same. Casting isn't supported by Gather yet.",
                  TypeInfo<IT>::name, TypeInfo<OT>::name);
@@ -48,14 +53,15 @@ Gather<IT, OT>::Gather(const Config& config,
     }
     BL_DEBUG("Height size of {} elements.", heightSize);
 
-    if (widthSize < config.copySizeThreshold) {
+    if (widthSize < config.copySizeThreshold && (ID==OD && ID==Device::CUDA)) {
         strategy = Strategy::Kernel;
-    } else {
+    }
+    else {
         strategy = Strategy::Copy;
     }
 
     // Allocate output buffers.
-    output.buf = ArrayTensor<Device::CUDA, OT>(getOutputBufferShape());
+    output.buf = ArrayTensor<OD, OT>(getOutputBufferShape());
 
     // Print configuration values.
 
@@ -67,8 +73,8 @@ Gather<IT, OT>::Gather(const Config& config,
     BL_INFO("Strategy: {}", (strategy == Strategy::Kernel) ? "KERNEL" : "COPY");
 }
 
-template<typename IT, typename OT>
-Result Gather<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
+template<Device ID, typename IT, Device OD, typename OT>
+Result Gather<ID, IT, OD,OT>::process(const U64& currentStepCount, const Stream& stream) {
     if (strategy == Strategy::Kernel) {
         cache
             .get_kernel(
@@ -110,9 +116,19 @@ Result Gather<IT, OT>::process(const U64& currentStepCount, const Stream& stream
     return Result::SUCCESS;
 }
 
-template class BLADE_API Gather<CI8, CI8>;
-template class BLADE_API Gather<CF16, CF16>;
-template class BLADE_API Gather<CF32, CF32>;
-template class BLADE_API Gather<F32, F32>;
+template class BLADE_API Gather<Device::CUDA, CI8, Device::CUDA, CI8>;
+template class BLADE_API Gather<Device::CUDA, CF16, Device::CUDA, CF16>;
+template class BLADE_API Gather<Device::CUDA, CF32, Device::CUDA, CF32>;
+template class BLADE_API Gather<Device::CUDA, F32, Device::CUDA, F32>;
+
+template class BLADE_API Gather<Device::CUDA, CI8, Device::CPU, CI8>;
+template class BLADE_API Gather<Device::CUDA, CF16, Device::CPU, CF16>;
+template class BLADE_API Gather<Device::CUDA, CF32, Device::CPU, CF32>;
+template class BLADE_API Gather<Device::CUDA, F32, Device::CPU, F32>;
+
+template class BLADE_API Gather<Device::CPU, CI8, Device::CUDA, CI8>;
+template class BLADE_API Gather<Device::CPU, CF16, Device::CUDA, CF16>;
+template class BLADE_API Gather<Device::CPU, CF32, Device::CUDA, CF32>;
+template class BLADE_API Gather<Device::CPU, F32, Device::CUDA, F32>;
 
 }  // namespace Blade::Modules

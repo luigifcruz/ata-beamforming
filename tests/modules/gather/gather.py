@@ -4,21 +4,19 @@ import blade as bl
 
 @bl.runner
 class Pipeline:
-    def __init__(self, in_shape, out_shape, config):
-        self.input.buf = bl.array_tensor(in_shape, dtype=bl.cf32)
-        self.output.buf = bl.array_tensor(out_shape, dtype=bl.cf32)
+    def __init__(self, in_device, in_shape, out_device, out_shape, config):
+        self.input.buf = bl.array_tensor(in_shape, dtype=bl.cf32, device=in_device)
 
-        self.module.gather = bl.module(bl.gather, config, self.input.buf)
+        self.module.gather = bl.module(bl.gather, config, self.input.buf, id=in_device, od=out_device)
 
     def transfer_in(self, buf):
         self.copy(self.input.buf, buf)
 
     def transfer_out(self, buf):
-        self.copy(self.output.buf, self.module.gather.get_output())
-        self.copy(buf, self.output.buf)
+        self.copy(buf, self.module.gather.get_output())
 
 
-def test(A, F, T, P, Axis, Multiplier):
+def test(A, F, T, P, Axis, Multiplier, in_device, out_device):
     in_shape = (A, F, T, P)
 
     config = {
@@ -42,7 +40,7 @@ def test(A, F, T, P, Axis, Multiplier):
     # Blade Implementation
     #
 
-    pipeline = Pipeline(in_shape, out_shape, config)
+    pipeline = Pipeline(in_device, in_shape, out_device, out_shape, config)
     while True:
         if pipeline(host_input, host_output):
             break
@@ -63,9 +61,17 @@ def test(A, F, T, P, Axis, Multiplier):
 
 
 if __name__ == "__main__":
-    test(int(sys.argv[1]),
-         int(sys.argv[2]),
-         int(sys.argv[3]), 
-         int(sys.argv[4]), 
-         int(sys.argv[5]),
-         int(sys.argv[6]))
+    for in_dev in [bl.cuda, bl.cpu]:
+        for out_dev in [bl.cuda, bl.cpu]:
+            if in_dev == out_dev and out_dev==bl.cpu:
+                continue
+
+            test(int(sys.argv[1]),
+                int(sys.argv[2]),
+                int(sys.argv[3]), 
+                int(sys.argv[4]), 
+                int(sys.argv[5]),
+                int(sys.argv[6]),
+                in_dev,
+                out_dev
+            )

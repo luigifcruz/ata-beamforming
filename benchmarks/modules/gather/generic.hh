@@ -6,7 +6,7 @@ namespace bm = benchmark;
 // CF32 -> CF32
 
 static void BM_Gather_Compute_CF32_CF32(bm::State& state) {
-    GatherTest<Modules::Gather, CF32, CF32> mud;
+    GatherTest<Modules::Gather, Device::CUDA, CF32, Device::CUDA, CF32> mud;
     BL_CHECK_THROW(mud.run(state));
 }
 
@@ -20,7 +20,7 @@ BENCHMARK(BM_Gather_Compute_CF32_CF32)
 // F16 -> F16
 
 static void BM_Gather_Compute_F16_F16(bm::State& state) {
-    GatherTest<Modules::Gather, CF16, CF16> mud;
+    GatherTest<Modules::Gather, Device::CUDA, CF16, Device::CUDA, CF16> mud;
     BL_CHECK_THROW(mud.run(state));
 }
 

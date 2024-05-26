@@ -7,12 +7,12 @@
 
 namespace Blade {
 
-template<template<typename, typename> class MUT, typename IT, typename OT>
+template<template<Device, typename, Device, typename> class MUT, Device ID, typename IT, Device OD, typename OT>
 class GatherTest : CudaBenchmark {
  public:
-    typename MUT<IT, OT>::Config config;
-    std::shared_ptr<MUT<IT, OT>> module;
-    ArrayTensor<Device::CUDA, IT> deviceInputBuf;
+    typename MUT<ID, IT, OD, OT>::Config config;
+    std::shared_ptr<MUT<ID, IT, OD, OT>> module;
+    ArrayTensor<ID, IT> deviceInputBuf;
 
     Result run(benchmark::State& state) {
         const U64 Axis = state.range(0);
@@ -25,7 +25,7 @@ class GatherTest : CudaBenchmark {
             config.multiplier = Mult;
             config.blockSize = 512;
 
-            deviceInputBuf = ArrayTensor<Device::CUDA, IT>({5, F, T, 2});
+            deviceInputBuf = ArrayTensor<ID, IT>({5, F, T, 2});
 
             BL_DISABLE_PRINT();
             Create(module, config, {
