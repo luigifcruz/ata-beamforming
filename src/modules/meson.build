@@ -3,6 +3,7 @@ sum_lst = {}
 subdir('cast')
 subdir('phasor')
 subdir('detector')
+subdir('correlator')
 subdir('beamformer')
 subdir('channelizer')
 subdir('polarizer')

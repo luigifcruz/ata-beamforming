@@ -15,6 +15,10 @@
 #include "blade/modules/detector.hh"
 #endif
 
+#ifdef BLADE_MODULE_CORRELATOR
+#include "blade/modules/correlator.hh"
+#endif
+
 #ifdef BLADE_MODULE_POLARIZER
 #include "blade/modules/polarizer.hh"
 #endif
