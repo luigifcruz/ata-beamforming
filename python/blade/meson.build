@@ -172,6 +172,18 @@ if cfg_lst.get('BLADE_MODULE_DETECTOR', false)
     )
 endif
 
+if cfg_lst.get('BLADE_MODULE_CORRELATOR', false)
+    py.extension_module(
+        '_correlator_impl',
+        sources: 'ext_correlator.cc',
+        include_directories: inc_lst,
+        dependencies: deps + dep_lst,
+        link_with: lib_blade,
+        install: true,
+        install_dir: py_install_path,
+    )
+endif
+
 if cfg_lst.get('BLADE_MODULE_DUPLICATE', false)
     py.extension_module(
         '_duplicate_impl',
