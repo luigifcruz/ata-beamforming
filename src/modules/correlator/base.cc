@@ -34,6 +34,12 @@ Correlator<IT, OT>::Correlator(const Config& config,
         BL_CHECK_THROW(Result::ERROR);
     }
 
+    if ((getInputBuffer().shape().numberOfFrequencyChannels() % config.blockSize) != 0) {
+        BL_FATAL("Number of frequency channels ({}) should be divisible by block size ({}).", 
+                 getInputBuffer().shape().numberOfFrequencyChannels(), config.blockSize);
+        BL_CHECK_THROW(Result::ERROR);
+    }
+    
     // TODO: Implement other polarizations.
     if (getInputBuffer().shape().numberOfPolarizations() != 2) {
         BL_FATAL("Number of polarizations ({}) should be two. Feature not implemented.",
@@ -48,16 +54,19 @@ Correlator<IT, OT>::Correlator(const Config& config,
         BL_CHECK_THROW(Result::ERROR);
     }
 
-    // TODO: The number of frequency channels has to be divisible by block size.
-
     // Choose best kernel based on input buffer size.
 
     std::string kernel_key;
+    std::string pretty_kernel_key;
 
     // Enable Shared Memory correlator if the size if less than 100 KB.
     if (((getInputBuffer().size() / getInputBuffer().shape().numberOfAspects()) * sizeof(IT)) < 100000) {
         kernel_key = "correlator_sm";
-    } 
+        pretty_kernel_key = "Shared Memory";
+    } else {
+        kernel_key = "correlator";
+        pretty_kernel_key = "Global Memory";
+    }
 
     if (kernel_key.empty()) {
         BL_FATAL("Can't find any compatible kernel.");
@@ -99,6 +108,7 @@ Correlator<IT, OT>::Correlator(const Config& config,
     BL_INFO("Shape: {} -> {}", getInputBuffer().shape(), 
                                getOutputBuffer().shape());
     BL_INFO("Integration Size: {}", config.integrationSize);
+    BL_INFO("Correlator Kernel: {}", pretty_kernel_key);
 }
 
 template<typename IT, typename OT>

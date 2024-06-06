@@ -19,8 +19,8 @@ class Pipeline:
 
 if __name__ == "__main__":
     # This assumes that the input data was already transferred to the frequency domain.
-    number_of_antennas = 2
-    number_of_channels = 8
+    number_of_antennas = 28
+    number_of_channels = 262144
     number_of_samples = 1
     number_of_polarizations = 2
 
@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     config = {
         'integration_size': 1,
-        'block_size': 4
+        'block_size': 32
     }
 
     host_input = bl.array_tensor(input_shape, dtype=bl.cf32, device=bl.cpu)
