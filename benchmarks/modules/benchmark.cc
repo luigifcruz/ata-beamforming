@@ -14,6 +14,10 @@
 #include "./detector/generic.hh"
 #endif
 
+#if defined(BLADE_MODULE_CORRELATOR)
+#include "./correlator/generic.hh"
+#endif
+
 #if defined(BLADE_MODULE_POLARIZER)
 #include "./polarizer/generic.hh"
 #endif
