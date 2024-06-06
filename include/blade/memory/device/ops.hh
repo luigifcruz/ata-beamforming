@@ -84,6 +84,10 @@ class alignas(2 * sizeof(T)) complex {
         return _imag;
     }
 
+    __host__ __device__ constexpr complex<T> conj() const {
+        return complex<T>(_real, -_imag);
+    }
+
  private:
     T _real;
     T _imag;

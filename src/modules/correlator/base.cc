@@ -48,6 +48,22 @@ Correlator<IT, OT>::Correlator(const Config& config,
         BL_CHECK_THROW(Result::ERROR);
     }
 
+    // TODO: The number of frequency channels has to be divisible by block size.
+
+    // Choose best kernel based on input buffer size.
+
+    std::string kernel_key;
+
+    // Enable Shared Memory correlator if the size if less than 100 KB.
+    if (((getInputBuffer().size() / getInputBuffer().shape().numberOfAspects()) * sizeof(IT)) < 100000) {
+        kernel_key = "correlator_sm";
+    } 
+
+    if (kernel_key.empty()) {
+        BL_FATAL("Can't find any compatible kernel.");
+        BL_CHECK_THROW(Result::ERROR);
+    }
+
     // Configure kernel instantiation.
 
     BL_CHECK_THROW(
@@ -55,18 +71,22 @@ Correlator<IT, OT>::Correlator(const Config& config,
             // Kernel name.
             "main",
             // Kernel function key.
-            "correlator",
+            kernel_key,
             // Kernel grid & block size.
-            PadGridSize(
-                // TODO: Replace with right values.
-                1024,
-                config.blockSize
+            dim3(
+                getInputBuffer().shape().numberOfAspects(),
+                getInputBuffer().shape().numberOfFrequencyChannels() / config.blockSize
             ),
             config.blockSize,
             // Kernel templates.
             TypeInfo<IT>::name,
             TypeInfo<OT>::name,
+            getInputBuffer().shape().numberOfAspects(),
+            getInputBuffer().shape().numberOfFrequencyChannels(),
+            getInputBuffer().shape().numberOfTimeSamples(),
+            getInputBuffer().shape().numberOfPolarizations(),
             getInputBuffer().size(),
+            config.blockSize,
             config.integrationSize
         )
     );
@@ -83,7 +103,7 @@ Correlator<IT, OT>::Correlator(const Config& config,
 
 template<typename IT, typename OT>
 Result Correlator<IT, OT>::process(const U64&, const Stream& stream) {
-    return runKernel("main", stream, input.buf.data(), output.buf.data());
+    return runKernel("main", stream, input.buf, output.buf);
 }
 
 template class BLADE_API Correlator<CF32, CF32>;

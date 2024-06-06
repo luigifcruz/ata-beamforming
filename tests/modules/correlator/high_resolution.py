@@ -19,8 +19,8 @@ class Pipeline:
 
 if __name__ == "__main__":
     # This assumes that the input data was already transferred to the frequency domain.
-    number_of_antennas = 20
-    number_of_channels = 262144
+    number_of_antennas = 2
+    number_of_channels = 8
     number_of_samples = 1
     number_of_polarizations = 2
 
@@ -31,6 +31,7 @@ if __name__ == "__main__":
 
     config = {
         'integration_size': 1,
+        'block_size': 4
     }
 
     host_input = bl.array_tensor(input_shape, dtype=bl.cf32, device=bl.cpu)
@@ -54,7 +55,18 @@ if __name__ == "__main__":
 
     py_output = np.zeros(output_shape, dtype=np.complex64)
     
-    # TODO: Implement.
+    ibline = 0
+    for iant1 in range(number_of_antennas):
+        for iant2 in range(iant1, number_of_antennas):
+            ant1 = bl_input[iant1, ...]
+            ant2 = bl_input[iant2, ...]
+
+            py_output[ibline, :, :, 0] = ant1[:, :, 0] * np.conj(ant2[:, :, 0])
+            py_output[ibline, :, :, 1] = ant1[:, :, 0] * np.conj(ant2[:, :, 1])
+            py_output[ibline, :, :, 2] = ant1[:, :, 1] * np.conj(ant2[:, :, 0])
+            py_output[ibline, :, :, 3] = ant1[:, :, 1] * np.conj(ant2[:, :, 1])
+            
+            ibline += 1
 
     #
     # Compare Results
