@@ -18,6 +18,6 @@ BENCHMARK(BM_Correlator_Compute)
 
 BENCHMARK(BM_Correlator_Compute)
     ->Iterations(2<<13)
-    ->Args({200, 1024, 1, 2, 512})
+    ->Args({200, 1024, 1, 2, 32})
     ->UseManualTime()
     ->Unit(bm::kMillisecond);

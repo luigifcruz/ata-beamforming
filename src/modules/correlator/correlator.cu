@@ -60,7 +60,6 @@ __global__ void correlator_sm(const ArrayTensor<Device::CUDA, IT> input,
 
     // Run the correlation and store the result in the output tensor.
     // TODO: Maybe we can optimize this by using shared memory for the output tensor.
-    // TODO: Use SIMD load/store instructions.
 
     for (U64 ABI = AAI; ABI < A; ABI++) {
         const U64 BASELINE_INDEX = ((AAI * (2 * A - AAI + 1)) / 2) + (ABI - AAI);
