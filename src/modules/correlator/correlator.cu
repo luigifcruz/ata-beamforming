@@ -17,7 +17,7 @@ using namespace Blade;
 // Fast but limited by the shared memory size.
 //
 
-template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 N, U64 BLOCK_SIZE>
+template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 BLOCK_SIZE>
 __global__ void correlator_sm(const ArrayTensor<Device::CUDA, IT> input, 
                                     ArrayTensor<Device::CUDA, OT> output) {
     // 1. Load antenna data chunk into shared memory.
@@ -96,7 +96,7 @@ __global__ void correlator_sm(const ArrayTensor<Device::CUDA, IT> input,
 // Global memory version without shared memory.
 //
 
-template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 N, U64 BLOCK_SIZE>
+template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 BLOCK_SIZE>
 __global__ void correlator(const ArrayTensor<Device::CUDA, IT> input, 
                                  ArrayTensor<Device::CUDA, OT> output) {
     // 1. Load antenna A and B data.
@@ -158,7 +158,7 @@ __global__ void correlator(const ArrayTensor<Device::CUDA, IT> input,
 // Global memory version with integration.
 //
 
-template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 N, U64 BLOCK_SIZE>
+template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 BLOCK_SIZE>
 __global__ void correlator_integrator(const ArrayTensor<Device::CUDA, IT> input, 
                                             ArrayTensor<Device::CUDA, OT> output) {
     // 1. Blank the output tensor.
