@@ -164,8 +164,7 @@ __global__ void correlator_integrator(const ArrayTensor<Device::CUDA, IT> input,
     // 1. Load antenna A and B data.
     // 2. Create temporary variables to accumulate the result.
     // 3. Add the multiply conjugate (XX = AX * CONJ(BX)) result to the temporary variables.
-    // 4. Divide the temporary variables by the number of time samples.
-    // 5. Store the result in the output tensor.
+    // 4. Store the result in the output tensor.
 
     // Get Block index.
     
@@ -208,11 +207,6 @@ __global__ void correlator_integrator(const ArrayTensor<Device::CUDA, IT> input,
             sumYX += AVAY * AVBX.conj();  // YX
             sumYY += AVAY * AVBY.conj();  // YY
         }
-
-        sumXX /= T;
-        sumXY /= T;
-        sumYX /= T;
-        sumYY /= T;
 
         const U64 OUTPUT_INDEX = (BASELINE_INDEX * C * OUTPUT_POLS) + (CI * OUTPUT_POLS);
 
