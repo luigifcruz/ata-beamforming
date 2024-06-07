@@ -19,9 +19,9 @@ class Pipeline:
 
 if __name__ == "__main__":
     # This assumes that the input data was already transferred to the frequency domain.
-    number_of_antennas = 2
-    number_of_channels = 4
-    number_of_samples = 2
+    number_of_antennas = 28
+    number_of_channels = 192
+    number_of_samples = 8192
     number_of_polarizations = 2
 
     number_of_baselines = int((number_of_antennas * (number_of_antennas + 1)) / 2)
@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     config = {
         'integration_size': number_of_samples,
-        'block_size': 4
+        'block_size': 32
     }
 
     host_input = bl.array_tensor(input_shape, dtype=bl.cf32, device=bl.cpu)
@@ -61,10 +61,10 @@ if __name__ == "__main__":
             ant1 = bl_input[iant1, ...]
             ant2 = bl_input[iant2, ...]
 
-            py_output[ibline, :, 0, 0] = np.sum(ant1[:, :, 0] * np.conj(ant2[:, :, 0]), axis=1)
-            py_output[ibline, :, 0, 1] = np.sum(ant1[:, :, 0] * np.conj(ant2[:, :, 1]), axis=1)
-            py_output[ibline, :, 0, 2] = np.sum(ant1[:, :, 1] * np.conj(ant2[:, :, 0]), axis=1)
-            py_output[ibline, :, 0, 3] = np.sum(ant1[:, :, 1] * np.conj(ant2[:, :, 1]), axis=1)
+            py_output[ibline, :, 0, 0] = np.average(ant1[:, :, 0] * np.conj(ant2[:, :, 0]), axis=1)
+            py_output[ibline, :, 0, 1] = np.average(ant1[:, :, 0] * np.conj(ant2[:, :, 1]), axis=1)
+            py_output[ibline, :, 0, 2] = np.average(ant1[:, :, 1] * np.conj(ant2[:, :, 0]), axis=1)
+            py_output[ibline, :, 0, 3] = np.average(ant1[:, :, 1] * np.conj(ant2[:, :, 1]), axis=1)
             
             ibline += 1
 

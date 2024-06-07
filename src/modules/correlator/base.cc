@@ -39,18 +39,17 @@ Correlator<IT, OT>::Correlator(const Config& config,
                  getInputBuffer().shape().numberOfFrequencyChannels(), config.blockSize);
         BL_CHECK_THROW(Result::ERROR);
     }
-    
+
+    if (config.integrationSize != 1 && getInputBuffer().shape().numberOfTimeSamples() != config.integrationSize) {
+        BL_FATAL("Integration size ({}) should be one (1) or the number of time samples ({}).", 
+                 config.integrationSize, getInputBuffer().shape().numberOfTimeSamples());
+        BL_CHECK_THROW(Result::ERROR);
+    }
+
     // TODO: Implement other polarizations.
     if (getInputBuffer().shape().numberOfPolarizations() != 2) {
         BL_FATAL("Number of polarizations ({}) should be two. Feature not implemented.",
                  getInputBuffer().shape().numberOfPolarizations());
-        BL_CHECK_THROW(Result::ERROR);
-    }
-
-    // TODO: Implement integration.
-    if (config.integrationSize != 1) {
-        BL_FATAL("Integration size ({}) should be one. Feature not implemented.", 
-                 config.integrationSize);
         BL_CHECK_THROW(Result::ERROR);
     }
 

@@ -9,16 +9,13 @@ if cfg_lst.get('BLADE_MODULE_DETECTOR', false)
             env: 'PYTHONPATH=@0@'.format(py_build_path),
         )
 
-        # TODO: Enable high resolution integration test.
-        #test(
-        #    'test-modules-correlator-high-res-int',
-        #    py,
-        #    args: files('high_resolution_integrate.py'),
-        #    is_parallel: false,
-        #    timeout: 0,
-        #    env: 'PYTHONPATH=@0@'.format(py_build_path),
-        #)
-
-        # TODO: Add standard resolution test.
+        test(
+            'test-modules-correlator-standard-res',
+            py,
+            args: files('standard_resolution.py'),
+            is_parallel: false,
+            timeout: 0,
+            env: 'PYTHONPATH=@0@'.format(py_build_path),
+        )
     endif
 endif

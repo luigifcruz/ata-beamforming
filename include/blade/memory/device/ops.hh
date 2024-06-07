@@ -44,6 +44,35 @@ class alignas(2 * sizeof(T)) complex {
         return complex<T>(real, imag);
     }
 
+    __host__ __device__ complex<T>& operator+=(const complex<T>& rhs) {
+        _real += rhs._real;
+        _imag += rhs._imag;
+        return *this;
+    }
+
+    __host__ __device__ complex<T>& operator-=(const complex<T>& rhs) {
+        _real -= rhs._real;
+        _imag -= rhs._imag;
+        return *this;
+    }
+
+    __host__ __device__ complex<T>& operator*=(const complex<T>& rhs) {
+        T real = _real * rhs._real - _imag * rhs._imag;
+        T imag = _real * rhs._imag + _imag * rhs._real;
+        _real = real;
+        _imag = imag;
+        return *this;
+    }
+
+    __host__ __device__ complex<T>& operator/=(const complex<T>& rhs) {
+        T denom = rhs._real * rhs._real + rhs._imag * rhs._imag;
+        T real = (_real * rhs._real + _imag * rhs._imag) / denom;
+        T imag = (_imag * rhs._real - _real * rhs._imag) / denom;
+        _real = real;
+        _imag = imag;
+        return *this;
+    }
+
     __host__ __device__ bool operator==(const complex<T>& rhs) const {
         if constexpr (std::is_same<T, __half>::value) {
             return __heq(_real, rhs._real) && __heq(_imag, rhs._imag);
@@ -91,6 +120,11 @@ class alignas(2 * sizeof(T)) complex {
     __host__ __device__ void atomic_add(const complex<T>& rhs) {
         atomicAdd(&_real, rhs._real);
         atomicAdd(&_imag, rhs._imag);
+    }
+
+    __host__ __device__ void atomic_sub(const complex<T>& rhs) {
+        atomicSub(&_real, rhs._real);
+        atomicSub(&_imag, rhs._imag);
     }
 
  private:
