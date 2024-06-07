@@ -13,13 +13,11 @@ using namespace Blade;
 // Blocks per Grid:   [20, 4]
 // Threads Per Block: [50]
 
-// TODO: Implement time integration.
-
 // 
 // Fast but limited by the shared memory size.
 //
 
-template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 N, U64 BLOCK_SIZE, U64 INT_SIZE>
+template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 N, U64 BLOCK_SIZE>
 __global__ void correlator_sm(const ArrayTensor<Device::CUDA, IT> input, 
                                     ArrayTensor<Device::CUDA, OT> output) {
     // 1. Load antenna data chunk into shared memory.
@@ -98,7 +96,7 @@ __global__ void correlator_sm(const ArrayTensor<Device::CUDA, IT> input,
 // Global memory version without shared memory.
 //
 
-template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 N, U64 BLOCK_SIZE, U64 INT_SIZE>
+template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 N, U64 BLOCK_SIZE>
 __global__ void correlator(const ArrayTensor<Device::CUDA, IT> input, 
                                  ArrayTensor<Device::CUDA, OT> output) {
     // 1. Load antenna A and B data.
@@ -154,4 +152,37 @@ __global__ void correlator(const ArrayTensor<Device::CUDA, IT> input,
 #endif
         }
     }
+}
+
+//
+// Global memory version with integration.
+//
+
+template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 N, U64 BLOCK_SIZE>
+__global__ void correlator_integrator(const ArrayTensor<Device::CUDA, IT> input, 
+                                            ArrayTensor<Device::CUDA, OT> output) {
+    // 1. Blank the output tensor.
+    // 2. Load antenna A and B data.
+    // 3. Do the multiply conjugate (XX = AX * CONJ(BX)).
+    // 4. Accumualate the result in the output tensor.
+    // 5. Average the result.
+
+    // Get Block index.
+    
+    const U64 BIX = blockIdx.x;  // Block Index X
+    const U64 BIY = blockIdx.y;  // Block Index Y
+
+    // Get Thread index.
+
+    const U64 TIX = threadIdx.x;  // Thread Index X
+
+    // Calculate constants.
+
+    const U64 OUTPUT_POLS = 4;                // XX, XY, YX, YY
+    const U64 AAI = BIX;                      // Antenna A Index
+    const U64 CI = TIX + (BIY * BLOCK_SIZE);  // Channel Index
+
+    // Run the correlation and store the result in the output tensor.
+
+    // TODO: Implement the integrator.
 }

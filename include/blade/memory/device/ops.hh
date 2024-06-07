@@ -88,6 +88,11 @@ class alignas(2 * sizeof(T)) complex {
         return complex<T>(_real, -_imag);
     }
 
+    __host__ __device__ void atomic_add(const complex<T>& rhs) {
+        atomicAdd(&_real, rhs._real);
+        atomicAdd(&_imag, rhs._imag);
+    }
+
  private:
     T _real;
     T _imag;

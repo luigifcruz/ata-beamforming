@@ -48,7 +48,7 @@ Correlator<IT, OT>::Correlator(const Config& config,
     }
 
     // TODO: Implement integration.
-    if (config.integrationSize <= 0) {
+    if (config.integrationSize != 1) {
         BL_FATAL("Integration size ({}) should be one. Feature not implemented.", 
                  config.integrationSize);
         BL_CHECK_THROW(Result::ERROR);
@@ -66,6 +66,12 @@ Correlator<IT, OT>::Correlator(const Config& config,
     } else {
         kernel_key = "correlator";
         pretty_kernel_key = "Global Memory";
+    }
+
+    // Enable Integration kernel if integration size is more than one.
+    if (config.integrationSize > 1) {
+        kernel_key = "correlator_integrator";
+        pretty_kernel_key = "Global Memory Integrator";
     }
 
     if (kernel_key.empty()) {
@@ -95,8 +101,7 @@ Correlator<IT, OT>::Correlator(const Config& config,
             getInputBuffer().shape().numberOfTimeSamples(),
             getInputBuffer().shape().numberOfPolarizations(),
             getInputBuffer().size(),
-            config.blockSize,
-            config.integrationSize
+            config.blockSize
         )
     );
 
