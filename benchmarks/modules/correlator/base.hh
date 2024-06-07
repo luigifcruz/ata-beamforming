@@ -17,10 +17,11 @@ class CorrelatorTest : CudaBenchmark {
         const U64 F = state.range(1);
         const U64 T = state.range(2);
         const U64 P = state.range(3);
-        const U64 blockSize = state.range(4);
+        const U64 integrationSize = state.range(4);
+        const U64 blockSize = state.range(5);
 
         InitAndProfile([&](){
-            config.integrationSize = 1;
+            config.integrationSize = integrationSize;
             config.blockSize = blockSize;
 
             deviceInputBuf = ArrayTensor<Device::CUDA, IT>({A, F, T, P});
