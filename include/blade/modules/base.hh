@@ -55,4 +55,8 @@
 #include "blade/modules/permutation.hh"
 #endif
 
+#ifdef BLADE_MODULE_INTEGRATE
+#include "blade/modules/integrate.hh"
+#endif
+
 #endif

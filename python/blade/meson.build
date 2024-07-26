@@ -160,6 +160,18 @@ if cfg_lst.get('BLADE_MODULE_GATHER', false)
     )
 endif
 
+if cfg_lst.get('BLADE_MODULE_INTEGRATE', false)
+    py.extension_module(
+        '_integrate_impl',
+        sources: 'ext_integrate.cc',
+        include_directories: inc_lst,
+        dependencies: deps + dep_lst,
+        link_with: lib_blade,
+        install: true,
+        install_dir: py_install_path,
+    )
+endif
+
 if cfg_lst.get('BLADE_MODULE_DETECTOR', false)
     py.extension_module(
         '_detector_impl',
