@@ -1,5 +1,5 @@
-#ifndef BLADE_MODULES_INTEGRATE_GENERIC_HH
-#define BLADE_MODULES_INTEGRATE_GENERIC_HH
+#ifndef BLADE_MODULES_INTEGRATOR_GENERIC_HH
+#define BLADE_MODULES_INTEGRATOR_GENERIC_HH
 
 #include "blade/base.hh"
 #include "blade/module.hh"
@@ -7,7 +7,7 @@
 namespace Blade::Modules {
 
 template<typename IT, typename OT>
-class BLADE_API Integrate : public Module {
+class BLADE_API Integrator : public Module {
  public:
     // Configuration
 
@@ -54,12 +54,12 @@ class BLADE_API Integrate : public Module {
     }
 
     std::string name() const {
-        return "Integrate";
+        return "Integrator";
     }
 
     // Constructor & Processing
 
-    explicit Integrate(const Config& config, const Input& input, const Stream& stream = {});
+    explicit Integrator(const Config& config, const Input& input, const Stream& stream = {});
     Result process(const U64& currentStepCount, const Stream& stream = {}) final;
 
  private:

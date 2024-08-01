@@ -1,14 +1,14 @@
-#ifndef BLADE_BENCHMARK_INTEGRATE_GENERIC_HH
-#define BLADE_BENCHMARK_INTEGRATE_GENERIC_HH
+#ifndef BLADE_BENCHMARK_INTEGRATOR_GENERIC_HH
+#define BLADE_BENCHMARK_INTEGRATOR_GENERIC_HH
 
-#include "blade/modules/integrate.hh"
+#include "blade/modules/integrator.hh"
 
 #include "../../helper.hh"
 
 namespace Blade {
 
 template<template<typename, typename> class MUT, typename IT, typename OT>
-class IntegrateTest : CudaBenchmark {
+class IntegratorTest : CudaBenchmark {
  public:
     typename MUT<IT, OT>::Config config;
     std::shared_ptr<MUT<IT, OT>> module;

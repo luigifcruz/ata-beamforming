@@ -9,7 +9,7 @@
 #include "blade/modules/cast.hh"
 #include "blade/modules/channelizer/base.hh"
 #include "blade/modules/correlator.hh"
-#include "blade/modules/integrate.hh"
+#include "blade/modules/integrator.hh"
 
 namespace Blade::Bundles::Generic {
 
@@ -30,7 +30,7 @@ class BLADE_API ModeX : public Bundle {
         U64 castBlockSize = 512;
         U64 channelizerBlockSize = 512;
         U64 correlatorBlockSize = 512;
-        U64 integrateBlockSize = 512;
+        U64 integratorBlockSize = 512;
     };
 
     constexpr const Config& getConfig() const {
@@ -50,7 +50,7 @@ class BLADE_API ModeX : public Bundle {
     // Output
 
     constexpr const ArrayTensor<Device::CUDA, OT>& getOutputBuffer() {
-        return integrate->getOutputBuffer();
+        return integrator->getOutputBuffer();
     }
 
     // Constructor
@@ -95,11 +95,11 @@ class BLADE_API ModeX : public Bundle {
             .buf = channelizer->getOutputBuffer(),
         });
 
-        BL_DEBUG("Instantiating integrate module.");
-        this->connect(integrate, {
+        BL_DEBUG("Instantiating integrator module.");
+        this->connect(integrator, {
             .rate = config.postCorrelationIntegrationRate,
 
-            .blockSize = config.integrateBlockSize,
+            .blockSize = config.integratorBlockSize,
         }, {
             .buf = correlator->getOutputBuffer(),
         });
@@ -127,8 +127,8 @@ class BLADE_API ModeX : public Bundle {
     using Correlator = typename Modules::Correlator<CF32, CF32>;
     std::shared_ptr<Correlator> correlator;
 
-    using Integrate = typename Modules::Integrate<CF32, CF32>;
-    std::shared_ptr<Integrate> integrate;
+    using Integrator = typename Modules::Integrator<CF32, CF32>;
+    std::shared_ptr<Integrator> integrator;
 };
 
 }  // namespace Blade::Bundles::Generic

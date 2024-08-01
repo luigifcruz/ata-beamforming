@@ -1,24 +1,24 @@
-#define BL_LOG_DOMAIN "M::INTEGRATE"
+#define BL_LOG_DOMAIN "M::INTEGRATOR"
 
 #include <type_traits>
 #include <typeindex>
 
-#include "blade/modules/integrate.hh"
+#include "blade/modules/integrator.hh"
 
-#include "integrate.jit.hh"
+#include "integrator.jit.hh"
 
 namespace Blade::Modules {
 
 template<typename IT, typename OT>
-Integrate<IT, OT>::Integrate(const Config& config,
+Integrator<IT, OT>::Integrator(const Config& config,
                              const Input& input,
                              const Stream& stream)
-        : Module(integrate_program),
+        : Module(integrator_program),
           config(config),
           input(input),
           computeRatio(config.rate) {
     if constexpr (!std::is_same<IT, OT>::value) {
-        BL_FATAL("Input ({}) and output ({}) types aren't the same. Casting isn't supported by Integrate yet.",
+        BL_FATAL("Input ({}) and output ({}) types aren't the same. Casting isn't supported by Integrator yet.",
                  TypeInfo<IT>::name, TypeInfo<OT>::name);
         BL_CHECK_THROW(Result::ERROR);
     }
@@ -34,7 +34,7 @@ Integrate<IT, OT>::Integrate(const Config& config,
             // Kernel name.
             "main",
             // Kernel function key.
-            "integrate",
+            "integrator",
             // Kernel grid & block size.
             PadGridSize(
                 getInputBuffer().size(),
@@ -59,16 +59,16 @@ Integrate<IT, OT>::Integrate(const Config& config,
 }
 
 template<typename IT, typename OT>
-Result Integrate<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
+Result Integrator<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
     if (currentStepCount == 0) {
         cudaMemset(output.buf.data(), 0, output.buf.size_bytes());
     }
     return runKernel("main", stream, input.buf, output.buf);
 }
 
-template class BLADE_API Integrate<CI8, CI8>;
-template class BLADE_API Integrate<CF16, CF16>;
-template class BLADE_API Integrate<CF32, CF32>;
-template class BLADE_API Integrate<F32, F32>;
+template class BLADE_API Integrator<CI8, CI8>;
+template class BLADE_API Integrator<CF16, CF16>;
+template class BLADE_API Integrator<CF32, CF32>;
+template class BLADE_API Integrator<F32, F32>;
 
 }  // namespace Blade::Modules

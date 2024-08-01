@@ -46,8 +46,8 @@
 #include "./beamformer/vla.hh"
 #endif
 
-#if defined(BLADE_MODULE_INTEGRATE)
-#include "./integrate/generic.hh"
+#if defined(BLADE_MODULE_INTEGRATOR)
+#include "./integrator/generic.hh"
 #endif
 
 BENCHMARK_MAIN();

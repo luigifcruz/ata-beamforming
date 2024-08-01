@@ -12,10 +12,10 @@ if all_deps_found
     ])
 
     jit_lst += files([
-        'integrate.cu',
+        'integrator.cu',
     ])
 endif
 
-sum_lst += {'[GEN] Integrate': all_deps_found}
+sum_lst += {'[GEN] Integrator': all_deps_found}
 
-cfg_lst.set('BLADE_MODULE_INTEGRATE', all_deps_found)
+cfg_lst.set('BLADE_MODULE_INTEGRATOR', all_deps_found)

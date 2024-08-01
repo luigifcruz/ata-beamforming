@@ -13,7 +13,7 @@
 #mesondefine BLADE_MODULE_GATHER
 #mesondefine BLADE_MODULE_DUPLICATE
 #mesondefine BLADE_MODULE_PERMUTATION
-#mesondefine BLADE_MODULE_INTEGRATE
+#mesondefine BLADE_MODULE_INTEGRATOR
 
 // ATA Specific Modules
 #mesondefine BLADE_MODULE_ATA_BEAMFORMER

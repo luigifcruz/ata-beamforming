@@ -11,7 +11,7 @@ subdir('gather')
 subdir('permutation')
 subdir('duplicate')
 subdir('guppi')
-subdir('integrate')
+subdir('integrator')
 subdir('bfr5')
 
 summary(sum_lst, section: 'Modules', bool_yn: true)

@@ -160,10 +160,10 @@ if cfg_lst.get('BLADE_MODULE_GATHER', false)
     )
 endif
 
-if cfg_lst.get('BLADE_MODULE_INTEGRATE', false)
+if cfg_lst.get('BLADE_MODULE_INTEGRATOR', false)
     py.extension_module(
-        '_integrate_impl',
-        sources: 'ext_integrate.cc',
+        '_integrator_impl',
+        sources: 'ext_integrator.cc',
         include_directories: inc_lst,
         dependencies: deps + dep_lst,
         link_with: lib_blade,
