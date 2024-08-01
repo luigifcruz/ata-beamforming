@@ -17,18 +17,18 @@ class CorrelatorTest : CudaBenchmark {
         const U64 F = state.range(1);
         const U64 T = state.range(2);
         const U64 P = state.range(3);
-        const U64 integrationSize = state.range(4);
+        const U64 integrationRate = state.range(4);
         const U64 blockSize = state.range(5);
 
         InitAndProfile([&](){
-            config.integrationSize = integrationSize;
+            config.integrationRate = integrationRate;
             config.blockSize = blockSize;
 
             deviceInputBuf = ArrayTensor<Device::CUDA, IT>({A, F, T, P});
 
             BL_DISABLE_PRINT();
             Create(module, config, {
-                .buf = deviceInputBuf, 
+                .buf = deviceInputBuf,
             }, this->getStream());
             BL_ENABLE_PRINT();
         }, state);

@@ -16,7 +16,7 @@ Integrate<IT, OT>::Integrate(const Config& config,
         : Module(integrate_program),
           config(config),
           input(input),
-          computeRatio(config.size) {
+          computeRatio(config.rate) {
     if constexpr (!std::is_same<IT, OT>::value) {
         BL_FATAL("Input ({}) and output ({}) types aren't the same. Casting isn't supported by Integrate yet.",
                  TypeInfo<IT>::name, TypeInfo<OT>::name);
@@ -55,7 +55,7 @@ Integrate<IT, OT>::Integrate(const Config& config,
     BL_INFO("Type: {} -> {}", TypeInfo<IT>::name, TypeInfo<OT>::name);
     BL_INFO("Shape: {} -> {}", getInputBuffer().shape(),
                                getOutputBuffer().shape());
-    BL_INFO("Size: {}", config.size);
+    BL_INFO("Rate: {}", config.rate);
 }
 
 template<typename IT, typename OT>

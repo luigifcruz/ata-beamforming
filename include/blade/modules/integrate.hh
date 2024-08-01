@@ -12,7 +12,7 @@ class BLADE_API Integrate : public Module {
     // Configuration
 
     struct Config {
-        U64 size = 1;
+        U64 rate = 1;
 
         U64 blockSize = 512;
     };

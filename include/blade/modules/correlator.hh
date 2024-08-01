@@ -14,7 +14,7 @@ class BLADE_API Correlator : public Module {
     // Configuration
 
     struct Config {
-        U64 integrationSize = 1;
+        U64 integrationRate = 1;
 
         U64 blockSize = 512;
     };
@@ -46,7 +46,7 @@ class BLADE_API Correlator : public Module {
     // Taint Registers
 
     constexpr Taint getTaint() const {
-        return Taint::CONSUMER | 
+        return Taint::CONSUMER |
                Taint::PRODUCER;
     }
 
@@ -60,7 +60,7 @@ class BLADE_API Correlator : public Module {
     Result process(const U64& currentStepCount, const Stream& stream = {}) final;
 
  private:
-    // Variables 
+    // Variables
 
     const Config config;
     const Input input;
@@ -74,7 +74,7 @@ class BLADE_API Correlator : public Module {
         return ArrayShape({
             static_cast<U64>((in.numberOfAspects() * (in.numberOfAspects() + 1)) / 2),
             static_cast<U64>(in.numberOfFrequencyChannels()),
-            static_cast<U64>(in.numberOfTimeSamples() / config.integrationSize),
+            static_cast<U64>(in.numberOfTimeSamples() / config.integrationRate),
             static_cast<U64>((in.numberOfPolarizations() == 2) ? 4 : 0),
         });
     }
@@ -83,4 +83,3 @@ class BLADE_API Correlator : public Module {
 }  // namespace Blade::Modules
 
 #endif
-

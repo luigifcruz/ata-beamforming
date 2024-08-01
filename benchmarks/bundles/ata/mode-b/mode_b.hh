@@ -111,7 +111,7 @@ class BenchmarkRunner {
             .beamformerIncoherentBeam = true,
 
             .detectorEnable = true,
-            .detectorIntegrationSize = 1,
+            .detectorIntegrationRate = 1,
             .detectorNumberOfOutputPolarizations = 1,
         };
         pipeline = std::make_shared<Benchmark<IT, OT>>(config);

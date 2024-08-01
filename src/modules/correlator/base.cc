@@ -17,32 +17,32 @@ Correlator<IT, OT>::Correlator(const Config& config,
     // Check configuration values.
 
     if (getInputBuffer().shape().numberOfAspects() <= 0) {
-        BL_FATAL("Number of aspects ({}) should be more than zero.", 
+        BL_FATAL("Number of aspects ({}) should be more than zero.",
                  getInputBuffer().shape().numberOfAspects());
         BL_CHECK_THROW(Result::ERROR);
     }
 
     if (getInputBuffer().shape().numberOfFrequencyChannels() <= 0) {
-        BL_FATAL("Number of frequency channels ({}) should be more than zero.", 
+        BL_FATAL("Number of frequency channels ({}) should be more than zero.",
                  getInputBuffer().shape().numberOfFrequencyChannels());
         BL_CHECK_THROW(Result::ERROR);
     }
 
     if (getInputBuffer().shape().numberOfTimeSamples() <= 0) {
-        BL_FATAL("Number of time samples ({}) should be more than zero.", 
+        BL_FATAL("Number of time samples ({}) should be more than zero.",
                  getInputBuffer().shape().numberOfTimeSamples());
         BL_CHECK_THROW(Result::ERROR);
     }
 
     if ((getInputBuffer().shape().numberOfFrequencyChannels() % config.blockSize) != 0) {
-        BL_FATAL("Number of frequency channels ({}) should be divisible by block size ({}).", 
+        BL_FATAL("Number of frequency channels ({}) should be divisible by block size ({}).",
                  getInputBuffer().shape().numberOfFrequencyChannels(), config.blockSize);
         BL_CHECK_THROW(Result::ERROR);
     }
 
-    if (config.integrationSize != 1 && getInputBuffer().shape().numberOfTimeSamples() != config.integrationSize) {
-        BL_FATAL("Integration size ({}) should be one (1) or the number of time samples ({}).", 
-                 config.integrationSize, getInputBuffer().shape().numberOfTimeSamples());
+    if (config.integrationRate != 1 && getInputBuffer().shape().numberOfTimeSamples() != config.integrationRate) {
+        BL_FATAL("Integration size ({}) should be one (1) or the number of time samples ({}).",
+                 config.integrationRate, getInputBuffer().shape().numberOfTimeSamples());
         BL_CHECK_THROW(Result::ERROR);
     }
 
@@ -68,7 +68,7 @@ Correlator<IT, OT>::Correlator(const Config& config,
     }
 
     // Enable Integration kernel if integration size is more than one.
-    if (config.integrationSize > 1) {
+    if (config.integrationRate > 1) {
         kernel_key = "correlator_integrator";
         pretty_kernel_key = "Global Memory Integrator";
     }
@@ -108,9 +108,9 @@ Correlator<IT, OT>::Correlator(const Config& config,
 
     // Print configuration values.
     BL_INFO("Type: {} -> {}", TypeInfo<IT>::name, TypeInfo<OT>::name);
-    BL_INFO("Shape: {} -> {}", getInputBuffer().shape(), 
+    BL_INFO("Shape: {} -> {}", getInputBuffer().shape(),
                                getOutputBuffer().shape());
-    BL_INFO("Integration Size: {}", config.integrationSize);
+    BL_INFO("Integration Rate: {}", config.integrationRate);
     BL_INFO("Correlator Kernel: {}", pretty_kernel_key);
 }
 

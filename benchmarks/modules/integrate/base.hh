@@ -19,10 +19,10 @@ class IntegrateTest : CudaBenchmark {
         const U64 F = state.range(1);
         const U64 T = state.range(2);
         const U64 P = state.range(3);
-        const U64 Size = state.range(4);
+        const U64 Rate = state.range(4);
 
         InitAndProfile([&](){
-            config.size = Size;
+            config.rate = Rate;
             config.blockSize = 512;
 
             deviceInputBuf = ArrayTensor<Device::CUDA, IT>({A, F, T, P});

@@ -21,7 +21,7 @@ class BLADE_API ModeH : public Bundle {
 
         BOOL polarizerConvertToCircular = false;
 
-        U64 detectorIntegrationSize;
+        U64 detectorIntegrationRate;
         U64 detectorNumberOfOutputPolarizations;
 
         U64 castBlockSize = 512;
@@ -83,7 +83,7 @@ class BLADE_API ModeH : public Bundle {
 
         BL_DEBUG("Instantiating detector module.");
         this->connect(detector, {
-            .integrationSize = config.detectorIntegrationSize,
+            .integrationRate = config.detectorIntegrationRate,
             .numberOfOutputPolarizations = config.detectorNumberOfOutputPolarizations,
 
             .blockSize = config.detectorBlockSize,

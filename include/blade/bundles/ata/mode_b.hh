@@ -41,7 +41,7 @@ class BLADE_API ModeB : public Bundle {
         BOOL beamformerIncoherentBeam = false;
 
         BOOL detectorEnable = false;
-        U64 detectorIntegrationSize;
+        U64 detectorIntegrationRate;
         U64 detectorNumberOfOutputPolarizations;
 
         U64 castBlockSize = 512;
@@ -164,7 +164,7 @@ class BLADE_API ModeB : public Bundle {
         if (config.detectorEnable) {
             BL_DEBUG("Instantiating detector module.");
             this->connect(detector, {
-                .integrationSize = config.detectorIntegrationSize,
+                .integrationRate = config.detectorIntegrationRate,
                 .numberOfOutputPolarizations = config.detectorNumberOfOutputPolarizations,
 
                 .blockSize = config.detectorBlockSize,

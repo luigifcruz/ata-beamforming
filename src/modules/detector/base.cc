@@ -14,27 +14,27 @@ Detector<IT, OT>::Detector(const Config& config,
           config(config),
           input(input) {
     // Check configuration values.
-    if (config.integrationSize <= 0) {
-        BL_WARN("Integration size ({}) should be more than zero.", config.integrationSize);
+    if (config.integrationRate <= 0) {
+        BL_WARN("Integration rate ({}) should be more than zero.", config.integrationRate);
         BL_CHECK_THROW(Result::ERROR);
     }
 
-    if ((getInputBuffer().shape().numberOfTimeSamples() % config.integrationSize) != 0) {
+    if ((getInputBuffer().shape().numberOfTimeSamples() % config.integrationRate) != 0) {
         BL_FATAL("The number of time samples ({}) should be divisable "
                  "by the integration size ({}).",
                  getInputBuffer().shape().numberOfTimeSamples(),
-                 config.integrationSize);
+                 config.integrationRate);
         BL_CHECK_THROW(Result::ERROR);
     }
 
     if (getInputBuffer().shape().numberOfPolarizations() != 2) {
-        BL_FATAL("Number of polarizations ({}) should be two (2).", 
+        BL_FATAL("Number of polarizations ({}) should be two (2).",
                  getInputBuffer().shape().numberOfPolarizations());
         BL_CHECK_THROW(Result::ERROR);
     }
 
     if (getInputBuffer().shape().numberOfAspects() <= 0) {
-        BL_FATAL("Number of aspects ({}) should be more than zero.", 
+        BL_FATAL("Number of aspects ({}) should be more than zero.",
                  getInputBuffer().shape().numberOfAspects());
         BL_CHECK_THROW(Result::ERROR);
     }
@@ -45,7 +45,7 @@ Detector<IT, OT>::Detector(const Config& config,
         case 4: kernel_key = "detector_4pol"; break;
         case 1: kernel_key = "detector_1pol"; break;
         default:
-            BL_FATAL("Number of output polarizations ({}) not supported.", 
+            BL_FATAL("Number of output polarizations ({}) not supported.",
                      config.numberOfOutputPolarizations);
             BL_CHECK_THROW(Result::ERROR);
     }
@@ -64,7 +64,7 @@ Detector<IT, OT>::Detector(const Config& config,
             config.blockSize,
             // Kernel templates.
             getInputBuffer().size() / getInputBuffer().shape().numberOfPolarizations(),
-            config.integrationSize
+            config.integrationRate
         )
     );
 
@@ -73,9 +73,9 @@ Detector<IT, OT>::Detector(const Config& config,
 
     // Print configuration values.
     BL_INFO("Type: {} -> {}", TypeInfo<IT>::name, TypeInfo<OT>::name);
-    BL_INFO("Shape: {} -> {}", getInputBuffer().shape(), 
+    BL_INFO("Shape: {} -> {}", getInputBuffer().shape(),
                                getOutputBuffer().shape());
-    BL_INFO("Integration Size: {}", config.integrationSize);
+    BL_INFO("Integration Rate: {}", config.integrationRate);
     BL_INFO("Number of Output Polarizations: {}", config.numberOfOutputPolarizations);
 }
 

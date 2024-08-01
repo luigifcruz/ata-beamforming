@@ -18,7 +18,7 @@ class DetectorTest : CudaBenchmark {
         const U64 P = state.range(2);
 
         InitAndProfile([&](){
-            config.integrationSize = I;
+            config.integrationRate = I;
             config.numberOfOutputPolarizations = P;
             config.blockSize = 512;
 
@@ -26,7 +26,7 @@ class DetectorTest : CudaBenchmark {
 
             BL_DISABLE_PRINT();
             Create(module, config, {
-                .buf = deviceInputBuf, 
+                .buf = deviceInputBuf,
             }, this->getStream());
             BL_ENABLE_PRINT();
         }, state);

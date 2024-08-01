@@ -50,7 +50,7 @@ class BenchmarkRunner {
 
             .polarizerConvertToCircular = true,
 
-            .detectorIntegrationSize = 1,
+            .detectorIntegrationRate = 1,
             .detectorNumberOfOutputPolarizations = 1,
         };
         pipeline = std::make_shared<Benchmark<IT, OT>>(config);

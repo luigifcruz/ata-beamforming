@@ -18,12 +18,12 @@ class Pipeline:
         self.copy(buf, self.output.buf)
 
 
-def test(A, F, T, P, Size):
+def test(A, F, T, P, Rate):
     in_shape = (A, F, T, P)
     out_shape = (A, F, T, P)
 
     config = {
-        "size": Size,
+        "rate": Rate,
     }
 
     host_input = bl.array_tensor(in_shape, dtype=bl.cf32, device=bl.cpu)
@@ -48,7 +48,7 @@ def test(A, F, T, P, Size):
     #
 
     py_output = np.zeros(out_shape, dtype=np.complex64)
-    for _ in range(Size):
+    for _ in range(Rate):
         py_output += bl_input
 
     #

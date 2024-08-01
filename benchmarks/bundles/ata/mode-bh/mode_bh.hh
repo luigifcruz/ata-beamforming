@@ -34,7 +34,7 @@ class Benchmark : public Runner {
 
         BOOL beamformerIncoherentBeam = false;
 
-        U64 detectorIntegrationSize;
+        U64 detectorIntegrationRate;
         U64 detectorNumberOfOutputPolarizations;
     };
 
@@ -61,7 +61,7 @@ class Benchmark : public Runner {
         BL_DEBUG("Gather input shape: {}", gatherInputShape);
         BL_DEBUG("Gather output shape: {}", gatherOutputShape);
         BL_DEBUG("Gather multiplier: {}", gatherMultiplier);
-        
+
         BL_DEBUG("Initializing Mode-B Bundle.");
         this->connect(modeB, {
             .inputShape = config.inputShape,
@@ -104,7 +104,7 @@ class Benchmark : public Runner {
 
             .polarizerConvertToCircular = false,
 
-            .detectorIntegrationSize = 1,
+            .detectorIntegrationRate = 1,
             .detectorNumberOfOutputPolarizations = config.detectorNumberOfOutputPolarizations,
         }, {
             .buffer = gather->getOutputBuffer(),
@@ -192,7 +192,7 @@ class BenchmarkRunner {
 
             .beamformerIncoherentBeam = true,
 
-            .detectorIntegrationSize = 4,
+            .detectorIntegrationRate = 4,
             .detectorNumberOfOutputPolarizations = 1,
         };
         pipeline = std::make_shared<Benchmark<IT, OT>>(config);
