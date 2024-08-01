@@ -1,5 +1,5 @@
-#ifndef BENCHMARKS_BUNDLES_GENERIC_MODEH_H
-#define BENCHMARKS_BUNDLES_GENERIC_MODEH_H
+#ifndef BENCHMARKS_BUNDLES_GENERIC_MODE_H_H
+#define BENCHMARKS_BUNDLES_GENERIC_MODE_H_H
 
 #include "blade/base.hh"
 #include "blade/bundles/generic/mode_h.hh"
@@ -77,7 +77,7 @@ class BenchmarkRunner {
             };
             BL_CHECK(pipeline->enqueue(inputCallback, outputCallback, enqueueCount, dequeueCount));
 
-            BL_CHECK(pipeline->dequeue([&](const U64& inputId, 
+            BL_CHECK(pipeline->dequeue([&](const U64& inputId,
                                            const U64& outputId,
                                            const bool& didOutput){
                 if (didOutput) {

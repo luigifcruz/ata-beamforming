@@ -1,5 +1,5 @@
-#ifndef BENCHMARKS_BUNDLES_ATA_MODEBH_H
-#define BENCHMARKS_BUNDLES_ATA_MODEBH_H
+#ifndef BENCHMARKS_BUNDLES_ATA_MODE_BH_H
+#define BENCHMARKS_BUNDLES_ATA_MODE_BH_H
 
 #include "blade/base.hh"
 #include "blade/memory/custom.hh"
@@ -92,7 +92,7 @@ class Benchmark : public Runner {
         BL_DEBUG("Instantiating gather.");
         this->connect(gather, {
             .axis = 2,
-            .multiplier = gatherMultiplier, 
+            .multiplier = gatherMultiplier,
         }, {
             .buf = modeB->getOutputBuffer(),
         });
@@ -221,7 +221,7 @@ class BenchmarkRunner {
             };
             BL_CHECK(pipeline->enqueue(inputCallback, outputCallback, enqueueCount, dequeueCount));
 
-            BL_CHECK(pipeline->dequeue([&](const U64& inputId, 
+            BL_CHECK(pipeline->dequeue([&](const U64& inputId,
                                            const U64& outputId,
                                            const bool& didOutput){
                 if (didOutput) {

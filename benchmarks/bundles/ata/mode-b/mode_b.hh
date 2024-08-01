@@ -1,5 +1,5 @@
-#ifndef BENCHMARKS_BUNDLES_ATA_MODEB_H
-#define BENCHMARKS_BUNDLES_ATA_MODEB_H
+#ifndef BENCHMARKS_BUNDLES_ATA_MODE_B_H
+#define BENCHMARKS_BUNDLES_ATA_MODE_B_H
 
 #include "blade/base.hh"
 #include "blade/bundles/ata/mode_b.hh"
@@ -140,7 +140,7 @@ class BenchmarkRunner {
             };
             BL_CHECK(pipeline->enqueue(inputCallback, outputCallback, enqueueCount, dequeueCount));
 
-            BL_CHECK(pipeline->dequeue([&](const U64& inputId, 
+            BL_CHECK(pipeline->dequeue([&](const U64& inputId,
                                            const U64& outputId,
                                            const bool& didOutput){
                 if (didOutput) {
