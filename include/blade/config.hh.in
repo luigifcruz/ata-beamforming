@@ -12,7 +12,7 @@
 #mesondefine BLADE_MODULE_POLARIZER
 #mesondefine BLADE_MODULE_GATHER
 #mesondefine BLADE_MODULE_DUPLICATE
-#mesondefine BLADE_MODULE_PERMUTATION
+#mesondefine BLADE_MODULE_PERMUTATOR
 #mesondefine BLADE_MODULE_INTEGRATOR
 
 // ATA Specific Modules

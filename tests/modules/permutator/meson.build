@@ -1,36 +1,36 @@
-if cfg_lst.get('BLADE_MODULE_PERMUTATION', false)
+if cfg_lst.get('BLADE_MODULE_PERMUTATOR', false)
     if py.found()
         test(
-            'test-modules-permutation-copy',
+            'test-modules-permutator-copy',
             py,
-            args: [files('permutation.py'), '0', '1', '2', '3'],
+            args: [files('permutator.py'), '0', '1', '2', '3'],
             is_parallel: false,
             timeout: 0,
             env: 'PYTHONPATH=@0@'.format(py_build_path),
         )
 
         test(
-            'test-modules-permutation-single',
+            'test-modules-permutator-single',
             py,
-            args: [files('permutation.py'), '0', '2', '1', '3'],
+            args: [files('permutator.py'), '0', '2', '1', '3'],
             is_parallel: false,
             timeout: 0,
             env: 'PYTHONPATH=@0@'.format(py_build_path),
         )
 
         test(
-            'test-modules-permutation-reverse',
+            'test-modules-permutator-reverse',
             py,
-            args: [files('permutation.py'), '3', '2', '1', '0'],
+            args: [files('permutator.py'), '3', '2', '1', '0'],
             is_parallel: false,
             timeout: 0,
             env: 'PYTHONPATH=@0@'.format(py_build_path),
         )
 
         test(
-            'test-modules-permutation-random',
+            'test-modules-permutator-random',
             py,
-            args: [files('permutation.py'), '2', '0', '3', '1'],
+            args: [files('permutator.py'), '2', '0', '3', '1'],
             is_parallel: false,
             timeout: 0,
             env: 'PYTHONPATH=@0@'.format(py_build_path),

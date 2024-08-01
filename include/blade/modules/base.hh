@@ -51,8 +51,8 @@
 #include "blade/modules/duplicate.hh"
 #endif
 
-#ifdef BLADE_MODULE_PERMUTATION
-#include "blade/modules/permutation.hh"
+#ifdef BLADE_MODULE_PERMUTATOR
+#include "blade/modules/permutator.hh"
 #endif
 
 #ifdef BLADE_MODULE_INTEGRATOR

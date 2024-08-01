@@ -3,12 +3,12 @@
 using namespace Blade;
 namespace bm = benchmark;
 
-static void BM_Permutation_Compute(bm::State& state) {
-    PermutationTest<Modules::Permutation, CF32, CF32> mud;
+static void BM_Permutator_Compute(bm::State& state) {
+    PermutatorTest<Modules::Permutator, CF32, CF32> mud;
     BL_CHECK_THROW(mud.run(state));
 }
 
-BENCHMARK(BM_Permutation_Compute)
+BENCHMARK(BM_Permutator_Compute)
     ->Iterations(2<<13)
     ->Args({0, 1, 2, 3})  // AFTP (Identity)
     ->Args({0, 2, 1, 3})  // ATFP

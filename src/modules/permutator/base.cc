@@ -1,23 +1,23 @@
-#define BL_LOG_DOMAIN "M::PERMUTATION"
+#define BL_LOG_DOMAIN "M::PERMUTATOR"
 
 #include <type_traits>
 #include <typeindex>
 
-#include "blade/modules/permutation.hh"
+#include "blade/modules/permutator.hh"
 
-#include "permutation.jit.hh"
+#include "permutator.jit.hh"
 
 namespace Blade::Modules {
 
 template<typename IT, typename OT>
-Permutation<IT, OT>::Permutation(const Config& config,
+Permutator<IT, OT>::Permutator(const Config& config,
                        const Input& input,
                        const Stream& stream)
-        : Module(permutation_program),
+        : Module(permutator_program),
           config(config),
           input(input) {
     if constexpr (!std::is_same<IT, OT>::value) {
-        BL_FATAL("Input ({}) and output ({}) types aren't the same. Casting isn't supported by Permutation yet.",
+        BL_FATAL("Input ({}) and output ({}) types aren't the same. Casting isn't supported by Permutator yet.",
                  TypeInfo<IT>::name, TypeInfo<OT>::name);
         BL_CHECK_THROW(Result::ERROR);
     }
@@ -31,13 +31,13 @@ Permutation<IT, OT>::Permutation(const Config& config,
     std::unordered_set<U64> indexesSet;
     for (U64 i = 0; i < config.indexes.dimensions(); i++) {
         if (indexesSet.find(config.indexes[i]) != indexesSet.end()) {
-            BL_FATAL("Repeated index {} in permutation.", config.indexes[i]);
+            BL_FATAL("Repeated index {} in permutator.", config.indexes[i]);
             BL_CHECK_THROW(Result::ERROR);
         }
         indexesSet.insert(config.indexes[i]);
     }
 
-    // TODO: Add bypass for identity permutation.
+    // TODO: Add bypass for identity permutator.
 
     // Configure kernels.
     BL_CHECK_THROW(
@@ -45,7 +45,7 @@ Permutation<IT, OT>::Permutation(const Config& config,
             // Kernel name.
             "main",
             // Kernel function key.
-            "permutation",
+            "permutator",
             // Kernel grid & block size.
             PadGridSize(
                 getInputBuffer().size(),
@@ -68,12 +68,12 @@ Permutation<IT, OT>::Permutation(const Config& config,
 }
 
 template<typename IT, typename OT>
-Result Permutation<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
+Result Permutator<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
     return this->runKernel("main", stream, input.buf, output.buf, config.indexes);
 }
 
-template class BLADE_API Permutation<CI8, CI8>;
-template class BLADE_API Permutation<CF16, CF16>;
-template class BLADE_API Permutation<CF32, CF32>;
+template class BLADE_API Permutator<CI8, CI8>;
+template class BLADE_API Permutator<CF16, CF16>;
+template class BLADE_API Permutator<CF32, CF32>;
 
 }  // namespace Blade::Modules

@@ -30,7 +30,7 @@ Currently, BLADE implements the following Modules:
 - **Cast**: Converts the input data type to another data type.
 - **Gather**: Tiles the input data into a larger Tensor axis.
 - **Duplicate**: Copies the input data into a new Tensor.
-- **Permutation**: Transposes the input data axis into a new order.
+- **Permutator**: Transposes the input data axis into a new order.
 - **Integrator**: Sums the input data into a accumulator.
 - **Correlator**: Performs correlation on a set of antennas.
 

@@ -1,5 +1,5 @@
-#ifndef BLADE_MODULES_PERMUTATION_GENERIC_HH
-#define BLADE_MODULES_PERMUTATION_GENERIC_HH
+#ifndef BLADE_MODULES_PERMUTATOR_GENERIC_HH
+#define BLADE_MODULES_PERMUTATOR_GENERIC_HH
 
 #include "blade/base.hh"
 #include "blade/module.hh"
@@ -9,7 +9,7 @@ namespace Blade::Modules {
 // MAYDO: Add built-in casting, if necessary.
 // MAYDO: Add support for types different than ArrayTensor, if necessary.
 template<typename IT, typename OT>
-class BLADE_API Permutation : public Module {
+class BLADE_API Permutator : public Module {
  public:
     // Configuration
 
@@ -51,12 +51,12 @@ class BLADE_API Permutation : public Module {
     }
 
     std::string name() const {
-        return "Permutation";
+        return "Permutator";
     }
 
     // Constructor & Processing
 
-    explicit Permutation(const Config& config, const Input& input, const Stream& stream = {});
+    explicit Permutator(const Config& config, const Input& input, const Stream& stream = {});
     Result process(const U64& currentStepCount, const Stream& stream = {}) final;
 
  private:

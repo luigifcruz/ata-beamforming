@@ -12,10 +12,10 @@ if all_deps_found
     ])
 
     jit_lst += files([
-        'permutation.cu',
+        'permutator.cu',
     ])
 endif
 
-sum_lst += {'[GEN] Permutation': all_deps_found}
+sum_lst += {'[GEN] Permutator': all_deps_found}
 
-cfg_lst.set('BLADE_MODULE_PERMUTATION', all_deps_found)
+cfg_lst.set('BLADE_MODULE_PERMUTATOR', all_deps_found)

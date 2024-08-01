@@ -1,14 +1,14 @@
-#ifndef BLADE_BENCHMARK_PERMUTATION_GENERIC_HH
-#define BLADE_BENCHMARK_PERMUTATION_GENERIC_HH
+#ifndef BLADE_BENCHMARK_PERMUTATOR_GENERIC_HH
+#define BLADE_BENCHMARK_PERMUTATOR_GENERIC_HH
 
-#include "blade/modules/permutation.hh"
+#include "blade/modules/permutator.hh"
 
 #include "../../helper.hh"
 
 namespace Blade {
 
 template<template<typename, typename> class MUT, typename IT, typename OT>
-class PermutationTest : CudaBenchmark {
+class PermutatorTest : CudaBenchmark {
  public:
     typename MUT<IT, OT>::Config config;
     std::shared_ptr<MUT<IT, OT>> module;

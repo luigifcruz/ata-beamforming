@@ -8,13 +8,13 @@ class Pipeline:
         self.input.buf = bl.array_tensor(in_shape, dtype=bl.cf32)
         self.output.buf = bl.array_tensor(out_shape, dtype=bl.cf32)
 
-        self.module.permutation = bl.module(bl.permutation, config, self.input.buf)
+        self.module.permutator = bl.module(bl.permutator, config, self.input.buf)
 
     def transfer_in(self, buf):
         self.copy(self.input.buf, buf)
 
     def transfer_out(self, buf):
-        self.copy(self.output.buf, self.module.permutation.get_output())
+        self.copy(self.output.buf, self.module.permutator.get_output())
         self.copy(buf, self.output.buf)
 
 

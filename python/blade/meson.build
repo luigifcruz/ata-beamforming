@@ -124,10 +124,10 @@ if cfg_lst.get('BLADE_MODULE_POLARIZER', false)
     )
 endif
 
-if cfg_lst.get('BLADE_MODULE_PERMUTATION', false)
+if cfg_lst.get('BLADE_MODULE_PERMUTATOR', false)
     py.extension_module(
-        '_permutation_impl',
-        sources: 'ext_permutation.cc',
+        '_permutator_impl',
+        sources: 'ext_permutator.cc',
         include_directories: inc_lst,
         dependencies: deps + dep_lst,
         link_with: lib_blade,

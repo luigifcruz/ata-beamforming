@@ -30,8 +30,8 @@
 #include "./duplicate/generic.hh"
 #endif
 
-#if defined(BLADE_MODULE_PERMUTATION)
-#include "./permutation/generic.hh"
+#if defined(BLADE_MODULE_PERMUTATOR)
+#include "./permutator/generic.hh"
 #endif
 
 #if defined(BLADE_MODULE_ATA_BEAMFORMER)
