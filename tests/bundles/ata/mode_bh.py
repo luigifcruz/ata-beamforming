@@ -10,7 +10,7 @@ import astropy.units as u
 
 @bl.runner
 class Pipeline:
-    def __init__(self, in_shape, out_shape, config_b, config_gather, config_h):
+    def __init__(self, in_shape, out_shape, config_b, config_gatherer, config_h):
         self.input.dut = bl.tensor(1, dtype=bl.f64, device=bl.cpu)
         self.input.date = bl.tensor(1, dtype=bl.f64, device=bl.cpu)
         self.input.buffer = bl.array_tensor(in_shape, dtype=bl.cf32)
@@ -18,8 +18,8 @@ class Pipeline:
 
         input = (self.input.dut, self.input.date, self.input.buffer)
         self.module.mode_b = bl.module(bl.modeb, config_b, input, telescope=bl.ata)
-        self.module.gather = bl.module(bl.gather, config_gather, self.module.mode_b.get_output(), ot=bl.cf32)
-        self.module.mode_h = bl.module(bl.modeh, config_h, self.module.gather.get_output(), ot=bl.f32)
+        self.module.gatherer = bl.module(bl.gatherer, config_gatherer, self.module.mode_b.get_output(), ot=bl.cf32)
+        self.module.mode_h = bl.module(bl.modeh, config_h, self.module.gatherer.get_output(), ot=bl.f32)
 
     def transfer_in(self, dut, date, buffer):
         self.copy(self.input.dut, dut)
@@ -104,7 +104,7 @@ if __name__ == "__main__":
         'detector_number_of_output_polarizations': 1,
     }
 
-    config_gather = {
+    config_gatherer = {
         'axis': 2,
         'multiplier': 4,
     }
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     # Blade Implementation
     #
 
-    pipeline = Pipeline(b_in_shape, h_out_shape, config_b, config_gather, config_h)
+    pipeline = Pipeline(b_in_shape, h_out_shape, config_b, config_gatherer, config_h)
 
     bl_input_date[0] = (1649366473.0/ 86400) + 2440587.5
     bl_input_dut[0] = 0.0

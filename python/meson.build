@@ -18,7 +18,7 @@ if py.found()
             'ext_copy.cc',
             'ext_duplicator.cc',
             'ext_detector.cc',
-            'ext_gather.cc',
+            'ext_gatherer.cc',
             'ext_guppi.cc',
             'ext_hidden.cc',
             'ext_mem.cc',

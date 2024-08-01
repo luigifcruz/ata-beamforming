@@ -5,7 +5,7 @@
 
 #include "blade/bundle.hh"
 
-#include "blade/modules/gather.hh"
+#include "blade/modules/gatherer.hh"
 #include "blade/modules/cast.hh"
 #include "blade/modules/channelizer/base.hh"
 #include "blade/modules/correlator.hh"
@@ -22,11 +22,11 @@ class BLADE_API ModeX : public Bundle {
         ArrayShape inputShape;
         ArrayShape outputShape;
 
-        U64 preCorrelationGatherRate;
+        U64 preCorrelationGathererRate;
 
         U64 postCorrelationIntegrationRate;
 
-        U64 gatherBlockSize = 512;
+        U64 gathererBlockSize = 512;
         U64 castBlockSize = 512;
         U64 channelizerBlockSize = 512;
         U64 correlatorBlockSize = 512;
@@ -59,12 +59,12 @@ class BLADE_API ModeX : public Bundle {
          : Bundle(stream), config(config), input(input) {
         BL_DEBUG("Initializing Mode-X Bundle.");
 
-        BL_DEBUG("Instantiating gather module.");
-        this->connect(gather, {
+        BL_DEBUG("Instantiating gatherer module.");
+        this->connect(gatherer, {
             .axis = 2,
-            .multiplier = config.preCorrelationGatherRate,
+            .multiplier = config.preCorrelationGathererRate,
 
-            .blockSize = config.gatherBlockSize,
+            .blockSize = config.gathererBlockSize,
         }, {
             .buf = input.buffer,
         });
@@ -73,13 +73,13 @@ class BLADE_API ModeX : public Bundle {
         this->connect(inputCast, {
             .blockSize = config.castBlockSize,
         }, {
-            .buf = gather->getOutputBuffer(),
+            .buf = gatherer->getOutputBuffer(),
         });
 
         BL_DEBUG("Instantiating channelizer module.");
         this->connect(channelizer, {
             .rate = config.inputShape.numberOfTimeSamples() *
-                    config.preCorrelationGatherRate,
+                    config.preCorrelationGathererRate,
 
             .blockSize = config.channelizerBlockSize,
         }, {
@@ -115,8 +115,8 @@ class BLADE_API ModeX : public Bundle {
     const Config config;
     Input input;
 
-    using Gather = typename Modules::Gather<IT, IT>;
-    std::shared_ptr<Gather> gather;
+    using Gatherer = typename Modules::Gatherer<IT, IT>;
+    std::shared_ptr<Gatherer> gatherer;
 
     using InputCast = typename Modules::Cast<IT, OT>;
     std::shared_ptr<InputCast> inputCast;

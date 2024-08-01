@@ -148,10 +148,10 @@ if cfg_lst.get('BLADE_MODULE_GUPPI', false)
     )
 endif
 
-if cfg_lst.get('BLADE_MODULE_GATHER', false)
+if cfg_lst.get('BLADE_MODULE_GATHERER', false)
     py.extension_module(
-        '_gather_impl',
-        sources: 'ext_gather.cc',
+        '_gatherer_impl',
+        sources: 'ext_gatherer.cc',
         include_directories: inc_lst,
         dependencies: deps + dep_lst,
         link_with: lib_blade,

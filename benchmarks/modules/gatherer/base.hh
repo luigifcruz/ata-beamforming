@@ -1,14 +1,14 @@
-#ifndef BLADE_BENCHMARK_GATHER_GENERIC_HH
-#define BLADE_BENCHMARK_GATHER_GENERIC_HH
+#ifndef BLADE_BENCHMARK_GATHERER_GENERIC_HH
+#define BLADE_BENCHMARK_GATHERER_GENERIC_HH
 
-#include "blade/modules/gather.hh"
+#include "blade/modules/gatherer.hh"
 
 #include "../../helper.hh"
 
 namespace Blade {
 
 template<template<typename, typename> class MUT, typename IT, typename OT>
-class GatherTest : CudaBenchmark {
+class GathererTest : CudaBenchmark {
  public:
     typename MUT<IT, OT>::Config config;
     std::shared_ptr<MUT<IT, OT>> module;

@@ -12,10 +12,10 @@ if all_deps_found
     ])
 
     jit_lst += files([
-        'gather.cu',
+        'gatherer.cu',
     ])
 endif
 
-sum_lst += {'[GEN] Gather': all_deps_found}
+sum_lst += {'[GEN] Gatherer': all_deps_found}
 
-cfg_lst.set('BLADE_MODULE_GATHER', all_deps_found)
+cfg_lst.set('BLADE_MODULE_GATHERER', all_deps_found)

@@ -48,7 +48,7 @@ class BenchmarkRunner {
             .inputShape = ArrayShape({ 28, 1, 32768, 2 }),
             .outputShape = ArrayShape({ 406, 262144, 1, 4 }),
 
-            .preCorrelationGatherRate = 8,
+            .preCorrelationGathererRate = 8,
 
             .postCorrelationIntegrationRate = 1024,
         };

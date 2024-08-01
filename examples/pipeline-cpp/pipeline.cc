@@ -1,6 +1,6 @@
 #include "blade/base.hh"
 #include "blade/modules/cast.hh"
-#include "blade/modules/gather.hh"
+#include "blade/modules/gatherer.hh"
 
 using namespace Blade;
 
@@ -18,7 +18,7 @@ class ExamplePipeline : public Runner {
             .buf = inputBuffer,
         });
 
-        this->connect(gather, {
+        this->connect(gatherer, {
             .axis = 2,
             .multiplier = config.outputShape[2] / config.inputShape[2],
         }, {
@@ -26,7 +26,7 @@ class ExamplePipeline : public Runner {
         });
 
         this->connect(outputCast, {}, {
-            .buf = gather->getOutputBuffer(),
+            .buf = gatherer->getOutputBuffer(),
         });
     }
 
@@ -43,7 +43,7 @@ class ExamplePipeline : public Runner {
 
  private:
     std::shared_ptr<Modules::Cast<IT, F32>> inputCast;
-    std::shared_ptr<Modules::Gather<F32, F32>> gather;
+    std::shared_ptr<Modules::Gatherer<F32, F32>> gatherer;
     std::shared_ptr<Modules::Cast<F32, OT>> outputCast;
 
     Duet<ArrayTensor<Device::CUDA, IT>> inputBuffer;

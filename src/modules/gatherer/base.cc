@@ -1,24 +1,24 @@
-#define BL_LOG_DOMAIN "M::GATHER"
+#define BL_LOG_DOMAIN "M::GATHERER"
 
 #include <type_traits>
 #include <typeindex>
 
-#include "blade/modules/gather.hh"
+#include "blade/modules/gatherer.hh"
 
-#include "gather.jit.hh"
+#include "gatherer.jit.hh"
 
 namespace Blade::Modules {
 
 template<typename IT, typename OT>
-Gather<IT, OT>::Gather(const Config& config,
+Gatherer<IT, OT>::Gatherer(const Config& config,
                        const Input& input,
                        const Stream& stream)
-        : Module(gather_program),
+        : Module(gatherer_program),
           config(config),
           input(input),
           computeRatio(config.multiplier) {
     if constexpr (!std::is_same<IT, OT>::value) {
-        BL_FATAL("Input ({}) and output ({}) types aren't the same. Casting isn't supported by Gather yet.",
+        BL_FATAL("Input ({}) and output ({}) types aren't the same. Casting isn't supported by Gatherer yet.",
                  TypeInfo<IT>::name, TypeInfo<OT>::name);
         BL_CHECK_THROW(Result::ERROR);
     }
@@ -68,11 +68,11 @@ Gather<IT, OT>::Gather(const Config& config,
 }
 
 template<typename IT, typename OT>
-Result Gather<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
+Result Gatherer<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
     if (strategy == Strategy::Kernel) {
         cache
             .get_kernel(
-                Template("accumulate")
+                Template("gatherer")
                     .instantiate(TypeInfo<IT>::name)
             )
             ->configure(
@@ -110,9 +110,9 @@ Result Gather<IT, OT>::process(const U64& currentStepCount, const Stream& stream
     return Result::SUCCESS;
 }
 
-template class BLADE_API Gather<CI8, CI8>;
-template class BLADE_API Gather<CF16, CF16>;
-template class BLADE_API Gather<CF32, CF32>;
-template class BLADE_API Gather<F32, F32>;
+template class BLADE_API Gatherer<CI8, CI8>;
+template class BLADE_API Gatherer<CF16, CF16>;
+template class BLADE_API Gatherer<CF32, CF32>;
+template class BLADE_API Gatherer<F32, F32>;
 
 }  // namespace Blade::Modules
