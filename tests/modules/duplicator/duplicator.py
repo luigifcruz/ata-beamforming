@@ -7,13 +7,13 @@ class Pipeline:
         self.input.buf = bl.array_tensor(shape, dtype=bl.cf32)
         self.output.buf = bl.array_tensor(shape, dtype=bl.cf32)
 
-        self.module.duplicate = bl.module(bl.duplicate, config, self.input.buf)
+        self.module.duplicator = bl.module(bl.duplicator, config, self.input.buf)
 
     def transfer_in(self, buf):
         self.copy(self.input.buf, buf)
 
     def transfer_out(self, buf):
-        self.copy(self.output.buf, self.module.duplicate.get_output())
+        self.copy(self.output.buf, self.module.duplicator.get_output())
         self.copy(buf, self.output.buf)
 
 

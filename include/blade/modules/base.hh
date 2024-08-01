@@ -47,8 +47,8 @@
 #include "blade/modules/gather.hh"
 #endif
 
-#ifdef BLADE_MODULE_DUPLICATE
-#include "blade/modules/duplicate.hh"
+#ifdef BLADE_MODULE_DUPLICATOR
+#include "blade/modules/duplicator.hh"
 #endif
 
 #ifdef BLADE_MODULE_PERMUTATOR

@@ -12,10 +12,10 @@ if all_deps_found
     ])
 
     jit_lst += files([
-        'duplicate.cu',
+        'duplicator.cu',
     ])
 endif
 
-sum_lst += {'[GEN] Duplicate': all_deps_found}
+sum_lst += {'[GEN] Duplicator': all_deps_found}
 
-cfg_lst.set('BLADE_MODULE_DUPLICATE', all_deps_found)
+cfg_lst.set('BLADE_MODULE_DUPLICATOR', all_deps_found)

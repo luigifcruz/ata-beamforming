@@ -1,14 +1,14 @@
-#ifndef BLADE_BENCHMARK_DUPLICATE_GENERIC_HH
-#define BLADE_BENCHMARK_DUPLICATE_GENERIC_HH
+#ifndef BLADE_BENCHMARK_DUPLICATOR_GENERIC_HH
+#define BLADE_BENCHMARK_DUPLICATOR_GENERIC_HH
 
-#include "blade/modules/duplicate.hh"
+#include "blade/modules/duplicator.hh"
 
 #include "../../helper.hh"
 
 namespace Blade {
 
 template<template<typename, typename> class MUT, typename IT, typename OT>
-class DuplicateTest : CudaBenchmark {
+class DuplicatorTest : CudaBenchmark {
  public:
     typename MUT<IT, OT>::Config config;
     std::shared_ptr<MUT<IT, OT>> module;

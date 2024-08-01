@@ -1,23 +1,23 @@
-#define BL_LOG_DOMAIN "M::DUPLICATE"
+#define BL_LOG_DOMAIN "M::DUPLICATOR"
 
 #include <type_traits>
 #include <typeindex>
 
-#include "blade/modules/duplicate.hh"
+#include "blade/modules/duplicator.hh"
 
-#include "duplicate.jit.hh"
+#include "duplicator.jit.hh"
 
 namespace Blade::Modules {
 
 template<typename IT, typename OT>
-Duplicate<IT, OT>::Duplicate(const Config& config,
+Duplicator<IT, OT>::Duplicator(const Config& config,
                              const Input& input,
                              const Stream& stream)
-        : Module(duplicate_program),
+        : Module(duplicator_program),
           config(config),
           input(input) {
     if constexpr (!std::is_same<IT, OT>::value) {
-        BL_FATAL("Input ({}) and output ({}) types aren't the same. Casting isn't supported by Duplicate yet.",
+        BL_FATAL("Input ({}) and output ({}) types aren't the same. Casting isn't supported by Duplicator yet.",
                  TypeInfo<IT>::name, TypeInfo<OT>::name);
         BL_CHECK_THROW(Result::ERROR);
     }
@@ -32,13 +32,13 @@ Duplicate<IT, OT>::Duplicate(const Config& config,
 }
 
 template<typename IT, typename OT>
-Result Duplicate<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
+Result Duplicator<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
     return Blade::Copy(output.buf, input.buf, stream);
 }
 
-template class BLADE_API Duplicate<CI8, CI8>;
-template class BLADE_API Duplicate<CF16, CF16>;
-template class BLADE_API Duplicate<CF32, CF32>;
-template class BLADE_API Duplicate<F32, F32>;
+template class BLADE_API Duplicator<CI8, CI8>;
+template class BLADE_API Duplicator<CF16, CF16>;
+template class BLADE_API Duplicator<CF32, CF32>;
+template class BLADE_API Duplicator<F32, F32>;
 
 }  // namespace Blade::Modules

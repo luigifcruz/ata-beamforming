@@ -196,10 +196,10 @@ if cfg_lst.get('BLADE_MODULE_CORRELATOR', false)
     )
 endif
 
-if cfg_lst.get('BLADE_MODULE_DUPLICATE', false)
+if cfg_lst.get('BLADE_MODULE_DUPLICATOR', false)
     py.extension_module(
-        '_duplicate_impl',
-        sources: 'ext_duplicate.cc',
+        '_duplicator_impl',
+        sources: 'ext_duplicator.cc',
         include_directories: inc_lst,
         dependencies: deps + dep_lst,
         link_with: lib_blade,

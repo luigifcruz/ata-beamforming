@@ -16,7 +16,7 @@ if py.found()
             'ext_channelizer.cc',
             'ext_const.cc',
             'ext_copy.cc',
-            'ext_duplicate.cc',
+            'ext_duplicator.cc',
             'ext_detector.cc',
             'ext_gather.cc',
             'ext_guppi.cc',

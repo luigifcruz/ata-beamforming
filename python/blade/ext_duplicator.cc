@@ -10,7 +10,7 @@ using namespace Blade;
 
 template<typename IT, typename OT>
 void NB_SUBMODULE(auto& m, const auto& in_name, const auto& out_name) {
-    using Class = Modules::Duplicate<IT, OT>;
+    using Class = Modules::Duplicator<IT, OT>;
 
     auto mm = m.def_submodule(in_name)
                .def_submodule(out_name);
@@ -36,11 +36,11 @@ void NB_SUBMODULE(auto& m, const auto& in_name, const auto& out_name) {
         .def("get_input", &Class::getInputBuffer, nb::rv_policy::reference)
         .def("get_output", &Class::getOutputBuffer, nb::rv_policy::reference)
         .def("__repr__", [](Class& obj){
-            return bl::fmt::format("Duplicate()");
+            return bl::fmt::format("Duplicator()");
         });
 }
 
-NB_MODULE(_duplicate_impl, m) {
+NB_MODULE(_duplicator_impl, m) {
     NB_SUBMODULE<CF32, CF32>(m, "in_cf32", "out_cf32");
     NB_SUBMODULE<CF16, CF16>(m, "in_cf16", "out_cf16");
     NB_SUBMODULE<CI8, CI8>(m, "in_ci8", "out_ci8");
