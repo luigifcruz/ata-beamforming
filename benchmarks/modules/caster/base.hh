@@ -1,12 +1,12 @@
-#ifndef BLADE_BENCHMARK_CAST_GENERIC_HH
-#define BLADE_BENCHMARK_CAST_GENERIC_HH
+#ifndef BLADE_BENCHMARK_CASTER_GENERIC_HH
+#define BLADE_BENCHMARK_CASTER_GENERIC_HH
 
 #include "../../helper.hh"
 
 namespace Blade {
 
 template<template<typename, typename> class MUT, typename IT, typename OT>
-class CastTest : CudaBenchmark {
+class CasterTest : CudaBenchmark {
  public:
     typename MUT<IT, OT>::Config config;
     std::shared_ptr<MUT<IT, OT>> module;

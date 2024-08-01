@@ -74,7 +74,7 @@ void NB_SUBMODULE(auto& m, const auto& in_name, const auto& out_name) {
                                      "detector_integration_size"_a,
                                      "detector_number_of_output_polarizations"_a,
 
-                                     "cast_block_size"_a = 512,
+                                     "caster_block_size"_a = 512,
                                      "channelizer_block_size"_a = 512,
                                      "phasor_block_size"_a = 512,
                                      "beamformer_block_size"_a = 512,

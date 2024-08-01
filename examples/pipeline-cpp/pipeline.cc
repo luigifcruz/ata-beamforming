@@ -1,5 +1,5 @@
 #include "blade/base.hh"
-#include "blade/modules/cast.hh"
+#include "blade/modules/caster.hh"
 #include "blade/modules/gatherer.hh"
 
 using namespace Blade;
@@ -14,7 +14,7 @@ class ExamplePipeline : public Runner {
 
     explicit ExamplePipeline(const Config& config) : inputBuffer(config.inputShape),
                                                      outputBuffer(config.outputShape) {
-        this->connect(inputCast, {}, {
+        this->connect(inputCaster, {}, {
             .buf = inputBuffer,
         });
 
@@ -22,10 +22,10 @@ class ExamplePipeline : public Runner {
             .axis = 2,
             .multiplier = config.outputShape[2] / config.inputShape[2],
         }, {
-            .buf = inputCast->getOutputBuffer(),
+            .buf = inputCaster->getOutputBuffer(),
         });
 
-        this->connect(outputCast, {}, {
+        this->connect(outputCaster, {}, {
             .buf = gatherer->getOutputBuffer(),
         });
     }
@@ -36,15 +36,15 @@ class ExamplePipeline : public Runner {
     }
 
     Result transferOut(ArrayTensor<Device::CPU, OT>& cpuOutputBuffer) {
-        BL_CHECK(this->copy(outputBuffer, outputCast->getOutputBuffer()));
+        BL_CHECK(this->copy(outputBuffer, outputCaster->getOutputBuffer()));
         BL_CHECK(this->copy(cpuOutputBuffer, outputBuffer));
         return Result::SUCCESS;
     }
 
  private:
-    std::shared_ptr<Modules::Cast<IT, F32>> inputCast;
+    std::shared_ptr<Modules::Caster<IT, F32>> inputCaster;
     std::shared_ptr<Modules::Gatherer<F32, F32>> gatherer;
-    std::shared_ptr<Modules::Cast<F32, OT>> outputCast;
+    std::shared_ptr<Modules::Caster<F32, OT>> outputCaster;
 
     Duet<ArrayTensor<Device::CUDA, IT>> inputBuffer;
     Duet<ArrayTensor<Device::CUDA, OT>> outputBuffer;

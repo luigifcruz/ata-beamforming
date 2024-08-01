@@ -1,19 +1,19 @@
-#define BL_LOG_DOMAIN "M::CAST"
+#define BL_LOG_DOMAIN "M::CASTER"
 
 #include <type_traits>
 #include <typeindex>
 
-#include "blade/modules/cast.hh"
+#include "blade/modules/caster.hh"
 
-#include "cast.jit.hh"
+#include "caster.jit.hh"
 
 namespace Blade::Modules {
 
 template<typename IT, typename OT>
-Cast<IT, OT>::Cast(const Config& config,
+Caster<IT, OT>::Caster(const Config& config,
                    const Input& input,
                    const Stream& stream)
-        : Module(cast_program),
+        : Module(caster_program),
           config(config),
           input(input) {
     // Configure kernel instantiation.
@@ -22,7 +22,7 @@ Cast<IT, OT>::Cast(const Config& config,
             // Kernel name.
             "main",
             // Kernel function key.
-            "cast",
+            "caster",
             // Kernel grid & block size.
             PadGridSize(
                 getInputBuffer().size() * TypeInfo<IT>::cudaSize,
@@ -58,7 +58,7 @@ Cast<IT, OT>::Cast(const Config& config,
 }
 
 template<typename IT, typename OT>
-Result Cast<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
+Result Caster<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
     if constexpr (std::is_same<IT, OT>::value) {
         return Result::SUCCESS;
     }
@@ -66,37 +66,37 @@ Result Cast<IT, OT>::process(const U64& currentStepCount, const Stream& stream) 
 }
 
 // I8 -> X
-template class BLADE_API Cast<I8, I8>;
-template class BLADE_API Cast<I8, F32>;
+template class BLADE_API Caster<I8, I8>;
+template class BLADE_API Caster<I8, F32>;
 
 // F16 -> X
-template class BLADE_API Cast<F16, F16>;
-template class BLADE_API Cast<F16, F32>;
-template class BLADE_API Cast<F16, CF32>;
-template class BLADE_API Cast<F16, CF16>;
+template class BLADE_API Caster<F16, F16>;
+template class BLADE_API Caster<F16, F32>;
+template class BLADE_API Caster<F16, CF32>;
+template class BLADE_API Caster<F16, CF16>;
 
 // F32 -> X
-template class BLADE_API Cast<F32, I32>;
-template class BLADE_API Cast<F32, F32>;
-template class BLADE_API Cast<F32, F16>;
-template class BLADE_API Cast<F32, CF32>;
-template class BLADE_API Cast<F32, CF16>;
+template class BLADE_API Caster<F32, I32>;
+template class BLADE_API Caster<F32, F32>;
+template class BLADE_API Caster<F32, F16>;
+template class BLADE_API Caster<F32, CF32>;
+template class BLADE_API Caster<F32, CF16>;
 
 // CI8 -> X
-template class BLADE_API Cast<CI8, CI8>;
-template class BLADE_API Cast<CI8, CF32>;
-template class BLADE_API Cast<CI8, CF16>;
+template class BLADE_API Caster<CI8, CI8>;
+template class BLADE_API Caster<CI8, CF32>;
+template class BLADE_API Caster<CI8, CF16>;
 
 // CF32 -> X
-template class BLADE_API Cast<CF32, F16>;
-template class BLADE_API Cast<CF32, F32>;
-template class BLADE_API Cast<CF32, CF16>;
-template class BLADE_API Cast<CF32, CF32>;
+template class BLADE_API Caster<CF32, F16>;
+template class BLADE_API Caster<CF32, F32>;
+template class BLADE_API Caster<CF32, CF16>;
+template class BLADE_API Caster<CF32, CF32>;
 
 // CF16 -> X
-template class BLADE_API Cast<CF16, F16>;
-template class BLADE_API Cast<CF16, F32>;
-template class BLADE_API Cast<CF16, CF32>;
-template class BLADE_API Cast<CF16, CF16>;
+template class BLADE_API Caster<CF16, F16>;
+template class BLADE_API Caster<CF16, F32>;
+template class BLADE_API Caster<CF16, CF32>;
+template class BLADE_API Caster<CF16, CF16>;
 
 }  // namespace Blade::Modules

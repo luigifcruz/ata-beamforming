@@ -3,7 +3,7 @@
 #define BLADE_BUILD_TYPE "@build_type@"
 
 // Generic Modules
-#mesondefine BLADE_MODULE_CAST
+#mesondefine BLADE_MODULE_CASTER
 #mesondefine BLADE_MODULE_CHANNELIZER
 #mesondefine BLADE_MODULE_DETECTOR
 #mesondefine BLADE_MODULE_CORRELATOR

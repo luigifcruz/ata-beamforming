@@ -1,6 +1,6 @@
 sum_lst = {}
 
-subdir('cast')
+subdir('caster')
 subdir('phasor')
 subdir('detector')
 subdir('correlator')

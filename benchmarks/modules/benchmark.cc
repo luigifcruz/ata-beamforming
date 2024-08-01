@@ -2,8 +2,8 @@
 
 #include "blade/types.hh"
 
-#if defined(BLADE_MODULE_CAST)
-#include "./cast/generic.hh"
+#if defined(BLADE_MODULE_CASTER)
+#include "./caster/generic.hh"
 #endif
 
 #if defined(BLADE_MODULE_CHANNELIZER)

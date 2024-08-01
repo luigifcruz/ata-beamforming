@@ -6,7 +6,7 @@
 #include "blade/bundle.hh"
 
 #include "blade/modules/gatherer.hh"
-#include "blade/modules/cast.hh"
+#include "blade/modules/caster.hh"
 #include "blade/modules/channelizer/base.hh"
 #include "blade/modules/correlator.hh"
 #include "blade/modules/integrator.hh"
@@ -27,7 +27,7 @@ class BLADE_API ModeX : public Bundle {
         U64 postCorrelationIntegrationRate;
 
         U64 gathererBlockSize = 512;
-        U64 castBlockSize = 512;
+        U64 casterBlockSize = 512;
         U64 channelizerBlockSize = 512;
         U64 correlatorBlockSize = 512;
         U64 integratorBlockSize = 512;
@@ -69,9 +69,9 @@ class BLADE_API ModeX : public Bundle {
             .buf = input.buffer,
         });
 
-        BL_DEBUG("Instantiating input cast module.");
-        this->connect(inputCast, {
-            .blockSize = config.castBlockSize,
+        BL_DEBUG("Instantiating input caster module.");
+        this->connect(inputCaster, {
+            .blockSize = config.casterBlockSize,
         }, {
             .buf = gatherer->getOutputBuffer(),
         });
@@ -83,7 +83,7 @@ class BLADE_API ModeX : public Bundle {
 
             .blockSize = config.channelizerBlockSize,
         }, {
-            .buf = inputCast->getOutputBuffer(),
+            .buf = inputCaster->getOutputBuffer(),
         });
 
         BL_DEBUG("Instantiating correlator module.");
@@ -118,8 +118,8 @@ class BLADE_API ModeX : public Bundle {
     using Gatherer = typename Modules::Gatherer<IT, IT>;
     std::shared_ptr<Gatherer> gatherer;
 
-    using InputCast = typename Modules::Cast<IT, OT>;
-    std::shared_ptr<InputCast> inputCast;
+    using InputCaster = typename Modules::Caster<IT, OT>;
+    std::shared_ptr<InputCaster> inputCaster;
 
     using PreChannelizer = typename Modules::Channelizer<CF32, CF32>;
     std::shared_ptr<PreChannelizer> channelizer;

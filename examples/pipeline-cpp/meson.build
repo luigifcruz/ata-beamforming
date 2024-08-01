@@ -1,4 +1,4 @@
-if cfg_lst.get('BLADE_MODULE_CAST', false) and \
+if cfg_lst.get('BLADE_MODULE_CASTER', false) and \
    cfg_lst.get('BLADE_MODULE_GATHERER', false)
     test(
         'test-examples-cpp',

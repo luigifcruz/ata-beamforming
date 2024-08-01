@@ -12,10 +12,10 @@ if all_deps_found
     ])
 
     jit_lst += files([
-        'cast.cu',
+        'caster.cu',
     ])
 endif
 
-sum_lst += {'[GEN] Cast': all_deps_found}
+sum_lst += {'[GEN] Caster': all_deps_found}
 
-cfg_lst.set('BLADE_MODULE_CAST', all_deps_found)
+cfg_lst.set('BLADE_MODULE_CASTER', all_deps_found)

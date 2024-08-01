@@ -12,7 +12,7 @@ if py.found()
         exclude_files: [
             'ext_beamformer.cc',
             'ext_bfr5.cc',
-            'ext_cast.cc',
+            'ext_caster.cc',
             'ext_channelizer.cc',
             'ext_const.cc',
             'ext_copy.cc',

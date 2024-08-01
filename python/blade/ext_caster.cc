@@ -10,7 +10,7 @@ using namespace Blade;
 
 template<typename IT, typename OT>
 void NB_SUBMODULE(auto& m, const auto& in_name, const auto& out_name) {
-    using Class = Modules::Cast<IT, OT>;
+    using Class = Modules::Caster<IT, OT>;
 
     auto mm = m.def_submodule(in_name)
                .def_submodule(out_name);
@@ -36,11 +36,11 @@ void NB_SUBMODULE(auto& m, const auto& in_name, const auto& out_name) {
         .def("get_input", &Class::getInputBuffer, nb::rv_policy::reference)
         .def("get_output", &Class::getOutputBuffer, nb::rv_policy::reference)
         .def("__repr__", [](Class& obj){
-            return bl::fmt::format("Cast()");
+            return bl::fmt::format("Caster()");
         });
 }
 
-NB_MODULE(_cast_impl, m) {
+NB_MODULE(_caster_impl, m) {
     // I8 -> X
     NB_SUBMODULE<  I8,   I8>(m, "in_i8", "out_i8");
     NB_SUBMODULE<  I8,  F32>(m, "in_i8", "out_f32");

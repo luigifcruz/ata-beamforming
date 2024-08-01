@@ -88,10 +88,10 @@ py.extension_module(
     install_dir: py_install_path,
 )
 
-if cfg_lst.get('BLADE_MODULE_CAST', false)
+if cfg_lst.get('BLADE_MODULE_CASTER', false)
     py.extension_module(
-        '_cast_impl',
-        sources: 'ext_cast.cc',
+        '_caster_impl',
+        sources: 'ext_caster.cc',
         include_directories: inc_lst,
         dependencies: deps + dep_lst,
         link_with: lib_blade,

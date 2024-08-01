@@ -3,8 +3,8 @@
 
 #include "blade_config.hh"
 
-#ifdef BLADE_MODULE_CAST
-#include "blade/modules/cast.hh"
+#ifdef BLADE_MODULE_CASTER
+#include "blade/modules/caster.hh"
 #endif
 
 #ifdef BLADE_MODULE_CHANNELIZER

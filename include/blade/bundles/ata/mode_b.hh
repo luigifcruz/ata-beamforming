@@ -5,7 +5,7 @@
 
 #include "blade/bundle.hh"
 
-#include "blade/modules/cast.hh"
+#include "blade/modules/caster.hh"
 #include "blade/modules/channelizer/base.hh"
 #include "blade/modules/beamformer/ata.hh"
 #include "blade/modules/phasor/ata.hh"
@@ -44,7 +44,7 @@ class BLADE_API ModeB : public Bundle {
         U64 detectorIntegrationRate;
         U64 detectorNumberOfOutputPolarizations;
 
-        U64 castBlockSize = 512;
+        U64 casterBlockSize = 512;
         U64 channelizerBlockSize = 512;
         U64 phasorBlockSize = 512;
         U64 beamformerBlockSize = 512;
@@ -81,13 +81,13 @@ class BLADE_API ModeB : public Bundle {
     constexpr const ArrayTensor<Device::CUDA, OT>& getOutputBuffer() {
         if (config.detectorEnable) {
             if constexpr (!std::is_same<OT, F32>::value) {
-                return outputCast->getOutputBuffer();
+                return outputCaster->getOutputBuffer();
             } else {
                 return detector->getOutputBuffer();
             }
         } else {
             if constexpr (!std::is_same<OT, CF32>::value) {
-                return complexOutputCast->getOutputBuffer();
+                return complexOutputCaster->getOutputBuffer();
             } else {
                 return beamformer->getOutputBuffer();
             }
@@ -100,9 +100,9 @@ class BLADE_API ModeB : public Bundle {
          : Bundle(stream), config(config), input(input) {
         BL_DEBUG("Initializing Mode-B Bundle for ATA.");
 
-        BL_DEBUG("Instantiating input cast from {} to CF32.", TypeInfo<IT>::name);
-        this->connect(inputCast, {
-            .blockSize = config.castBlockSize,
+        BL_DEBUG("Instantiating input caster from {} to CF32.", TypeInfo<IT>::name);
+        this->connect(inputCaster, {
+            .blockSize = config.casterBlockSize,
         }, {
             .buf = input.buffer,
         });
@@ -114,7 +114,7 @@ class BLADE_API ModeB : public Bundle {
 
             .blockSize = config.channelizerBlockSize,
         }, {
-            .buf = inputCast->getOutputBuffer(),
+            .buf = inputCaster->getOutputBuffer(),
         });
 
         BL_DEBUG("Instatiating polarizer module.")
@@ -173,18 +173,18 @@ class BLADE_API ModeB : public Bundle {
             });
 
             if constexpr (!std::is_same<OT, F32>::value) {
-                BL_DEBUG("Instantiating output cast from F32 to {}.", TypeInfo<OT>::name);
-                this->connect(outputCast, {
-                    .blockSize = config.castBlockSize,
+                BL_DEBUG("Instantiating output caster from F32 to {}.", TypeInfo<OT>::name);
+                this->connect(outputCaster, {
+                    .blockSize = config.casterBlockSize,
                 }, {
                     .buf = detector->getOutputBuffer(),
                 });
             }
         } else {
             if constexpr (!std::is_same<OT, CF32>::value) {
-                BL_DEBUG("Instantiating output cast from CF32 to {}.", TypeInfo<OT>::name);
-                this->connect(complexOutputCast, {
-                    .blockSize = config.castBlockSize,
+                BL_DEBUG("Instantiating output caster from CF32 to {}.", TypeInfo<OT>::name);
+                this->connect(complexOutputCaster, {
+                    .blockSize = config.casterBlockSize,
                 }, {
                     .buf = beamformer->getOutputBuffer(),
                 });
@@ -202,8 +202,8 @@ class BLADE_API ModeB : public Bundle {
     const Config config;
     Input input;
 
-    using InputCast = typename Modules::Cast<IT, CF32>;
-    std::shared_ptr<InputCast> inputCast;
+    using InputCaster = typename Modules::Caster<IT, CF32>;
+    std::shared_ptr<InputCaster> inputCaster;
 
     using PreChannelizer = typename Modules::Channelizer<CF32, CF32>;
     std::shared_ptr<PreChannelizer> channelizer;
@@ -220,8 +220,8 @@ class BLADE_API ModeB : public Bundle {
     using Detector = typename Modules::Detector<CF32, F32>;
     std::shared_ptr<Detector> detector;
 
-    std::shared_ptr<Modules::Cast<CF32, OT>> complexOutputCast;
-    std::shared_ptr<Modules::Cast<F32, OT>> outputCast;
+    std::shared_ptr<Modules::Caster<CF32, OT>> complexOutputCaster;
+    std::shared_ptr<Modules::Caster<F32, OT>> outputCaster;
 };
 
 }  // namespace Blade::Bundles::ATA
