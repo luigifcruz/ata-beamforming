@@ -1,3 +1,7 @@
+#
+#  Mode B
+#
+
 deps = [
     'BLADE_MODULE_CAST',
     'BLADE_MODULE_CHANNELIZER',

@@ -30,6 +30,7 @@
 
 // Generic Pipelines
 #mesondefine BLADE_BUNDLE_GENERIC_MODE_H
+#mesondefine BLADE_BUNDLE_GENERIC_MODE_X
 
 // Dependency Loaders
 #mesondefine BLADE_LOADER_RADIOINTERFEROMETRY
