@@ -43,8 +43,8 @@ class BLADE_API ModeX : public Bundle {
         const ArrayTensor<Device::CUDA, IT>& buffer;
     };
 
-    constexpr const Tensor<Device::CPU, F64>& getInputJulianDate() const {
-        return this->input.julianDate;
+    constexpr const ArrayTensor<Device::CUDA, IT>& getInputBuffer() const {
+        return this->input.buffer;
     }
 
     // Output

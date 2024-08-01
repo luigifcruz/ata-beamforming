@@ -269,3 +269,15 @@ if (cfg_lst.get('BLADE_BUNDLE_GENERIC_MODE_H', false))
         install_dir: py_install_path,
     )
 endif
+
+if (cfg_lst.get('BLADE_BUNDLE_GENERIC_MODE_X', false))
+    py.extension_module(
+        '_modex_impl',
+        sources: 'ext_modex.cc',
+        include_directories: inc_lst,
+        dependencies: deps + dep_lst,
+        link_with: lib_blade,
+        install: true,
+        install_dir: py_install_path,
+    )
+endif

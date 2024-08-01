@@ -53,7 +53,7 @@ _types_lst     = ['f16', 'f32', 'f64', 'i8', 'i16', 'i32', 'i64', 'u8', 'u16', '
 _modules_lst   = ['beamformer', 'bfr5_reader', 'caster', 'channelizer', 'duplicator', 'detector', 'gatherer',
                   'guppi_reader', 'guppi_writer', 'permutator', 'phasor', 'polarizer', 'correlator',
                   'integrator',
-                  'modeh', 'modeb']
+                  'modeh', 'modeb', 'modex']
 
 def _create_constants(names_list):
     for name in names_list:
