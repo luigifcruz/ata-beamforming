@@ -9,7 +9,6 @@
 #include "blade/modules/caster.hh"
 #include "blade/modules/channelizer/base.hh"
 #include "blade/modules/correlator.hh"
-#include "blade/modules/integrator.hh"
 
 namespace Blade::Bundles::Generic {
 
@@ -22,15 +21,14 @@ class BLADE_API ModeX : public Bundle {
         ArrayShape inputShape;
         ArrayShape outputShape;
 
-        U64 preCorrelationGathererRate;
+        U64 preCorrelatorGathererMultiplier = 1;
 
-        U64 postCorrelationIntegrationRate;
+        U64 correlatorIntegrationRate = 1;
 
         U64 gathererBlockSize = 512;
         U64 casterBlockSize = 512;
         U64 channelizerBlockSize = 512;
-        U64 correlatorBlockSize = 512;
-        U64 integratorBlockSize = 512;
+        U64 correlatorBlockSize = 32;
     };
 
     constexpr const Config& getConfig() const {
@@ -50,7 +48,7 @@ class BLADE_API ModeX : public Bundle {
     // Output
 
     constexpr const ArrayTensor<Device::CUDA, OT>& getOutputBuffer() {
-        return integrator->getOutputBuffer();
+        return correlator->getOutputBuffer();
     }
 
     // Constructor
@@ -62,7 +60,7 @@ class BLADE_API ModeX : public Bundle {
         BL_DEBUG("Instantiating gatherer module.");
         this->connect(gatherer, {
             .axis = 2,
-            .multiplier = config.preCorrelationGathererRate,
+            .multiplier = config.preCorrelatorGathererMultiplier,
 
             .blockSize = config.gathererBlockSize,
         }, {
@@ -79,7 +77,7 @@ class BLADE_API ModeX : public Bundle {
         BL_DEBUG("Instantiating channelizer module.");
         this->connect(channelizer, {
             .rate = config.inputShape.numberOfTimeSamples() *
-                    config.preCorrelationGathererRate,
+                    config.preCorrelatorGathererMultiplier,
 
             .blockSize = config.channelizerBlockSize,
         }, {
@@ -88,20 +86,11 @@ class BLADE_API ModeX : public Bundle {
 
         BL_DEBUG("Instantiating correlator module.");
         this->connect(correlator, {
-            .integrationRate = 1,
+            .integrationRate = config.correlatorIntegrationRate,
 
             .blockSize = config.correlatorBlockSize,
         }, {
             .buf = channelizer->getOutputBuffer(),
-        });
-
-        BL_DEBUG("Instantiating integrator module.");
-        this->connect(integrator, {
-            .rate = config.postCorrelationIntegrationRate,
-
-            .blockSize = config.integratorBlockSize,
-        }, {
-            .buf = correlator->getOutputBuffer(),
         });
 
         if (getOutputBuffer().shape() != config.outputShape) {
@@ -126,9 +115,6 @@ class BLADE_API ModeX : public Bundle {
 
     using Correlator = typename Modules::Correlator<CF32, CF32>;
     std::shared_ptr<Correlator> correlator;
-
-    using Integrator = typename Modules::Integrator<CF32, CF32>;
-    std::shared_ptr<Integrator> integrator;
 };
 
 }  // namespace Blade::Bundles::Generic

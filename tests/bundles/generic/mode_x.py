@@ -19,16 +19,16 @@ class Pipeline:
 
 
 if __name__ == "__main__":
-    in_shape = (4, 1, 8192, 2)
+    in_shape = (4, 1, 32768, 2)
     out_shape = (10, 65536, 1, 4)
 
     config = {
         'input_shape': in_shape,
         'output_shape': out_shape,
 
-        'pre_correlation_gatherer_rate': 8,
+        'pre_correlator_gatherer_rate': 2,
 
-        'post_correlation_integration_rate': 1024
+        'correlator_integration_rate': 8192
     }
 
     host_input_buffer = bl.array_tensor(in_shape, dtype=bl.cf32, device=bl.cpu)
@@ -45,8 +45,9 @@ if __name__ == "__main__":
 
     pipeline = Pipeline(in_shape, out_shape, config)
 
-    for _ in range(8192):
-        pipeline(host_input_buffer, host_output_buffer)
+    while True:
+        if pipeline(host_input_buffer, host_output_buffer):
+            break
 
     #
     # Python Implementation

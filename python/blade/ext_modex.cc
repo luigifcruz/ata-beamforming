@@ -29,20 +29,18 @@ void NB_SUBMODULE(auto& m, const auto& in_name, const auto& out_name) {
                       const U64&,
                       const U64&,
                       const U64&,
-                      const U64&,
                       const U64&>(),
                                      "input_shape"_a,
                                      "output_shape"_a,
 
-                                     "pre_correlation_gatherer_rate"_a,
+                                     "pre_correlator_gatherer_rate"_a,
 
-                                     "post_correlation_integration_rate"_a,
+                                     "correlator_integration_rate"_a,
 
                                      "gatherer_block_size"_a = 512,
                                      "caster_block_size"_a = 512,
                                      "channelizer_block_size"_a = 512,
-                                     "correlator_block_size"_a = 512,
-                                     "integrator_block_size"_a = 512);
+                                     "correlator_block_size"_a = 32);
 
     nb::class_<typename Class::Input>(mod, "input")
         .def(nb::init<const ArrayTensor<Device::CUDA, IT>&>(), "buffer"_a);

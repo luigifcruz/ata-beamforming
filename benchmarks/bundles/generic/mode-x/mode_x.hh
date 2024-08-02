@@ -46,11 +46,11 @@ class BenchmarkRunner {
         BL_DEBUG("Configuring Pipeline.");
         config = {
             .inputShape = ArrayShape({ 28, 1, 32768, 2 }),
-            .outputShape = ArrayShape({ 406, 262144, 1, 4 }),
+            .outputShape = ArrayShape({ 406, 65536, 1, 4 }),
 
-            .preCorrelationGathererRate = 8,
+            .preCorrelatorGathererMultiplier = 2,
 
-            .postCorrelationIntegrationRate = 1024,
+            .correlatorIntegrationRate = 8192,
         };
         pipeline = std::make_shared<Benchmark<IT, OT>>(config);
 
