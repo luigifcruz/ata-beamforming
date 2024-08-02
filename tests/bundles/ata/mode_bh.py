@@ -100,7 +100,7 @@ if __name__ == "__main__":
         'beamformer_incoherent_beam': False,
 
         'detector_enable': False,
-        'detector_integration_size': 1,
+        'detector_integration_rate': 1,
         'detector_number_of_output_polarizations': 1,
     }
 
@@ -115,7 +115,7 @@ if __name__ == "__main__":
 
         'polarizer_convert_to_circular': True,
 
-        'detector_integration_size': 1,
+        'detector_integration_rate': 1,
         'detector_number_of_output_polarizations': 1,
     }
 

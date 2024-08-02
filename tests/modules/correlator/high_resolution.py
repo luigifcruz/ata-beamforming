@@ -31,7 +31,7 @@ if __name__ == "__main__":
     output_shape = (number_of_baselines, number_of_channels, number_of_samples, 4)
 
     config = {
-        'integration_size': integration_rate,
+        'integration_rate': integration_rate,
         'block_size': 32
     }
 

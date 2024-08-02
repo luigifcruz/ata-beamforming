@@ -71,7 +71,7 @@ void NB_SUBMODULE(auto& m, const auto& in_name, const auto& out_name) {
                                      "beamformer_incoherent_beam"_a,
 
                                      "detector_enable"_a,
-                                     "detector_integration_size"_a,
+                                     "detector_integration_rate"_a,
                                      "detector_number_of_output_polarizations"_a,
 
                                      "caster_block_size"_a = 512,

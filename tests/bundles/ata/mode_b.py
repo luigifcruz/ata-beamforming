@@ -93,7 +93,7 @@ if __name__ == "__main__":
         'beamformer_incoherent_beam': False,
 
         'detector_enable': True,
-        'detector_integration_size': 1,
+        'detector_integration_rate': 1,
         'detector_number_of_output_polarizations': 1,
     }
 
