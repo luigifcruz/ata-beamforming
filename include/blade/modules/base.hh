@@ -43,8 +43,8 @@
 #include "blade/modules/phasor/ata.hh"
 #endif
 
-#ifdef BLADE_MODULE_GATHERER
-#include "blade/modules/gatherer.hh"
+#ifdef BLADE_MODULE_STACKER
+#include "blade/modules/stacker.hh"
 #endif
 
 #ifdef BLADE_MODULE_DUPLICATOR

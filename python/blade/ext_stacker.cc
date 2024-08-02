@@ -10,7 +10,7 @@ using namespace Blade;
 
 template<typename IT, typename OT>
 void NB_SUBMODULE(auto& m, const auto& in_name, const auto& out_name) {
-    using Class = Modules::Gatherer<IT, OT>;
+    using Class = Modules::Stacker<IT, OT>;
 
     auto mm = m.def_submodule(in_name)
                .def_submodule(out_name);
@@ -42,11 +42,11 @@ void NB_SUBMODULE(auto& m, const auto& in_name, const auto& out_name) {
         .def("get_input", &Class::getInputBuffer, nb::rv_policy::reference)
         .def("get_output", &Class::getOutputBuffer, nb::rv_policy::reference)
         .def("__repr__", [](Class& obj){
-            return bl::fmt::format("Gatherer()");
+            return bl::fmt::format("Stacker()");
         });
 }
 
-NB_MODULE(_gatherer_impl, m) {
+NB_MODULE(_stacker_impl, m) {
     NB_SUBMODULE<F32, F32>(m, "in_f64", "out_f64");
     NB_SUBMODULE<CF32, CF32>(m, "in_cf32", "out_cf32");
     NB_SUBMODULE<CF16, CF16>(m, "in_cf16", "out_cf16");

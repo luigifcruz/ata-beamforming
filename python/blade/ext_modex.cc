@@ -33,11 +33,11 @@ void NB_SUBMODULE(auto& m, const auto& in_name, const auto& out_name) {
                                      "input_shape"_a,
                                      "output_shape"_a,
 
-                                     "pre_correlator_gatherer_rate"_a,
+                                     "pre_correlator_stacker_rate"_a,
 
                                      "correlator_integration_rate"_a,
 
-                                     "gatherer_block_size"_a = 512,
+                                     "stacker_block_size"_a = 512,
                                      "caster_block_size"_a = 512,
                                      "channelizer_block_size"_a = 512,
                                      "correlator_block_size"_a = 32);

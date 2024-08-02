@@ -1,24 +1,24 @@
-#define BL_LOG_DOMAIN "M::GATHERER"
+#define BL_LOG_DOMAIN "M::STACKER"
 
 #include <type_traits>
 #include <typeindex>
 
-#include "blade/modules/gatherer.hh"
+#include "blade/modules/stacker.hh"
 
-#include "gatherer.jit.hh"
+#include "stacker.jit.hh"
 
 namespace Blade::Modules {
 
 template<typename IT, typename OT>
-Gatherer<IT, OT>::Gatherer(const Config& config,
+Stacker<IT, OT>::Stacker(const Config& config,
                        const Input& input,
                        const Stream& stream)
-        : Module(gatherer_program),
+        : Module(stacker_program),
           config(config),
           input(input),
           computeRatio(config.multiplier) {
     if constexpr (!std::is_same<IT, OT>::value) {
-        BL_FATAL("Input ({}) and output ({}) types aren't the same. Casting isn't supported by Gatherer yet.",
+        BL_FATAL("Input ({}) and output ({}) types aren't the same. Casting isn't supported by Stacker yet.",
                  TypeInfo<IT>::name, TypeInfo<OT>::name);
         BL_CHECK_THROW(Result::ERROR);
     }
@@ -68,11 +68,11 @@ Gatherer<IT, OT>::Gatherer(const Config& config,
 }
 
 template<typename IT, typename OT>
-Result Gatherer<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
+Result Stacker<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
     if (strategy == Strategy::Kernel) {
         cache
             .get_kernel(
-                Template("gatherer")
+                Template("stacker")
                     .instantiate(TypeInfo<IT>::name)
             )
             ->configure(
@@ -110,9 +110,9 @@ Result Gatherer<IT, OT>::process(const U64& currentStepCount, const Stream& stre
     return Result::SUCCESS;
 }
 
-template class BLADE_API Gatherer<CI8, CI8>;
-template class BLADE_API Gatherer<CF16, CF16>;
-template class BLADE_API Gatherer<CF32, CF32>;
-template class BLADE_API Gatherer<F32, F32>;
+template class BLADE_API Stacker<CI8, CI8>;
+template class BLADE_API Stacker<CF16, CF16>;
+template class BLADE_API Stacker<CF32, CF32>;
+template class BLADE_API Stacker<F32, F32>;
 
 }  // namespace Blade::Modules

@@ -22,8 +22,8 @@
 #include "./polarizer/generic.hh"
 #endif
 
-#if defined(BLADE_MODULE_GATHERER)
-#include "./gatherer/generic.hh"
+#if defined(BLADE_MODULE_STACKER)
+#include "./stacker/generic.hh"
 #endif
 
 #if defined(BLADE_MODULE_DUPLICATOR)

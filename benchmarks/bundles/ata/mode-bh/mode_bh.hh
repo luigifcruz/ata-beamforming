@@ -3,7 +3,7 @@
 
 #include "blade/base.hh"
 #include "blade/memory/custom.hh"
-#include "blade/modules/gatherer.hh"
+#include "blade/modules/stacker.hh"
 #include "blade/bundles/ata/mode_b.hh"
 #include "blade/bundles/generic/mode_h.hh"
 
@@ -44,28 +44,28 @@ class Benchmark : public Runner {
            inputBuffer(config.inputShape),
            outputBuffer(config.outputShape) {
 
-        ArrayShape gathererInputShape = config.inputShape;
+        ArrayShape stackerInputShape = config.inputShape;
         // Replace the number of antennas with the number of beams.
-        gathererInputShape[0] = config.phasorBeamCoordinates.size();
+        stackerInputShape[0] = config.phasorBeamCoordinates.size();
         // Add one for the incoherent beam.
         if (config.beamformerIncoherentBeam) {
-            gathererInputShape[0] = gathererInputShape.numberOfAspects() + 1;
+            stackerInputShape[0] = stackerInputShape.numberOfAspects() + 1;
         }
 
-        ArrayShape gathererOutputShape = gathererInputShape;
+        ArrayShape stackerOutputShape = stackerInputShape;
         // Output should be the number of frequency channels of the output.
-        gathererOutputShape[2] = config.outputShape[1] / config.inputShape[1];
+        stackerOutputShape[2] = config.outputShape[1] / config.inputShape[1];
 
-        U64 gathererMultiplier = gathererOutputShape[2] / gathererInputShape[2];
+        U64 stackerMultiplier = stackerOutputShape[2] / stackerInputShape[2];
 
-        BL_DEBUG("Gatherer input shape: {}", gathererInputShape);
-        BL_DEBUG("Gatherer output shape: {}", gathererOutputShape);
-        BL_DEBUG("Gatherer multiplier: {}", gathererMultiplier);
+        BL_DEBUG("Stacker input shape: {}", stackerInputShape);
+        BL_DEBUG("Stacker output shape: {}", stackerOutputShape);
+        BL_DEBUG("Stacker multiplier: {}", stackerMultiplier);
 
         BL_DEBUG("Initializing Mode-B Bundle.");
         this->connect(modeB, {
             .inputShape = config.inputShape,
-            .outputShape = gathererInputShape,
+            .outputShape = stackerInputShape,
 
             .preBeamformerChannelizerRate = 1,
 
@@ -89,17 +89,17 @@ class Benchmark : public Runner {
             .buffer = inputBuffer,
         });
 
-        BL_DEBUG("Instantiating gatherer.");
-        this->connect(gatherer, {
+        BL_DEBUG("Instantiating stacker.");
+        this->connect(stacker, {
             .axis = 2,
-            .multiplier = gathererMultiplier,
+            .multiplier = stackerMultiplier,
         }, {
             .buf = modeB->getOutputBuffer(),
         });
 
         BL_DEBUG("Initializing Mode-H Bundle.");
         this->connect(modeH, {
-            .inputShape = gathererOutputShape,
+            .inputShape = stackerOutputShape,
             .outputShape = config.outputShape,
 
             .polarizerConvertToCircular = false,
@@ -107,7 +107,7 @@ class Benchmark : public Runner {
             .detectorIntegrationRate = 1,
             .detectorNumberOfOutputPolarizations = config.detectorNumberOfOutputPolarizations,
         }, {
-            .buffer = gatherer->getOutputBuffer(),
+            .buffer = stacker->getOutputBuffer(),
         });
     }
 
@@ -129,7 +129,7 @@ class Benchmark : public Runner {
  private:
     std::shared_ptr<ModeB> modeB;
     std::shared_ptr<ModeH> modeH;
-    std::shared_ptr<Modules::Gatherer<CF32, CF32>> gatherer;
+    std::shared_ptr<Modules::Stacker<CF32, CF32>> stacker;
 
     Duet<Tensor<Device::CPU, F64>> inputDut;
     Duet<Tensor<Device::CPU, F64>> inputJulianDate;

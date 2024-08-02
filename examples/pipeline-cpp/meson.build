@@ -1,5 +1,5 @@
 if cfg_lst.get('BLADE_MODULE_CASTER', false) and \
-   cfg_lst.get('BLADE_MODULE_GATHERER', false)
+   cfg_lst.get('BLADE_MODULE_STACKER', false)
     test(
         'test-examples-cpp',
          executable(

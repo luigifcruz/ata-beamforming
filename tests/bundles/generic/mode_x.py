@@ -26,7 +26,7 @@ if __name__ == "__main__":
         'input_shape': in_shape,
         'output_shape': out_shape,
 
-        'pre_correlator_gatherer_rate': 2,
+        'pre_correlator_stacker_rate': 2,
 
         'correlator_integration_rate': 8192
     }

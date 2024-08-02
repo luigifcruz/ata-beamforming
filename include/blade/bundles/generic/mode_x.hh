@@ -5,7 +5,7 @@
 
 #include "blade/bundle.hh"
 
-#include "blade/modules/gatherer.hh"
+#include "blade/modules/stacker.hh"
 #include "blade/modules/caster.hh"
 #include "blade/modules/channelizer/base.hh"
 #include "blade/modules/correlator.hh"
@@ -21,11 +21,11 @@ class BLADE_API ModeX : public Bundle {
         ArrayShape inputShape;
         ArrayShape outputShape;
 
-        U64 preCorrelatorGathererMultiplier = 1;
+        U64 preCorrelatorStackerMultiplier = 1;
 
         U64 correlatorIntegrationRate = 1;
 
-        U64 gathererBlockSize = 512;
+        U64 stackerBlockSize = 512;
         U64 casterBlockSize = 512;
         U64 channelizerBlockSize = 512;
         U64 correlatorBlockSize = 32;
@@ -57,12 +57,12 @@ class BLADE_API ModeX : public Bundle {
          : Bundle(stream), config(config), input(input) {
         BL_DEBUG("Initializing Mode-X Bundle.");
 
-        BL_DEBUG("Instantiating gatherer module.");
-        this->connect(gatherer, {
+        BL_DEBUG("Instantiating stacker module.");
+        this->connect(stacker, {
             .axis = 2,
-            .multiplier = config.preCorrelatorGathererMultiplier,
+            .multiplier = config.preCorrelatorStackerMultiplier,
 
-            .blockSize = config.gathererBlockSize,
+            .blockSize = config.stackerBlockSize,
         }, {
             .buf = input.buffer,
         });
@@ -71,13 +71,13 @@ class BLADE_API ModeX : public Bundle {
         this->connect(inputCaster, {
             .blockSize = config.casterBlockSize,
         }, {
-            .buf = gatherer->getOutputBuffer(),
+            .buf = stacker->getOutputBuffer(),
         });
 
         BL_DEBUG("Instantiating channelizer module.");
         this->connect(channelizer, {
             .rate = config.inputShape.numberOfTimeSamples() *
-                    config.preCorrelatorGathererMultiplier,
+                    config.preCorrelatorStackerMultiplier,
 
             .blockSize = config.channelizerBlockSize,
         }, {
@@ -104,8 +104,8 @@ class BLADE_API ModeX : public Bundle {
     const Config config;
     Input input;
 
-    using Gatherer = typename Modules::Gatherer<IT, IT>;
-    std::shared_ptr<Gatherer> gatherer;
+    using Stacker = typename Modules::Stacker<IT, IT>;
+    std::shared_ptr<Stacker> stacker;
 
     using InputCaster = typename Modules::Caster<IT, OT>;
     std::shared_ptr<InputCaster> inputCaster;
