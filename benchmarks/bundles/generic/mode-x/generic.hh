@@ -9,7 +9,7 @@ namespace bm = benchmark;
 namespace chr = std::chrono;
 
 static void BM_BundleGenericModeX(benchmark::State& state) {
-    const uint64_t count = 256;
+    const uint64_t count = 64;
     std::shared_ptr<Generic::ModeX::BenchmarkRunner<CI8, CF32>> bench;
 
     BL_DISABLE_PRINT();
