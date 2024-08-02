@@ -61,7 +61,7 @@ Integrator<IT, OT>::Integrator(const Config& config,
 template<typename IT, typename OT>
 Result Integrator<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
     if (currentStepCount == 0) {
-        cudaMemset(output.buf.data(), 0, output.buf.size_bytes());
+        cudaMemsetAsync(output.buf.data(), 0, output.buf.size_bytes(), stream);
     }
     return runKernel("main", stream, input.buf, output.buf);
 }
