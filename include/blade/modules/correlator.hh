@@ -16,7 +16,7 @@ class BLADE_API Correlator : public Module {
     struct Config {
         U64 integrationRate = 1;
 
-        U64 blockSize = 512;
+        U64 blockSize = 32;
     };
 
     constexpr const Config& getConfig() const {
