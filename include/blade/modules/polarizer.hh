@@ -14,6 +14,7 @@ class BLADE_API Polarizer : public Module {
     struct Config {
         POL inputPolarization = POL::XY;
         POL outputPolarization = POL::LR;
+
         U64 blockSize = 512;
     };
 
