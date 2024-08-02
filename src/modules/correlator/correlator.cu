@@ -79,10 +79,10 @@ __global__ void correlator_sm(const ArrayTensor<Device::CUDA, IT> input,
 
             const U64 OUTPUT_INDEX = (BASELINE_INDEX * C * T * OUTPUT_POLS) + (CI * T * OUTPUT_POLS) + (TI * OUTPUT_POLS);
 
-            output[OUTPUT_INDEX + 0] = XX;
-            output[OUTPUT_INDEX + 1] = XY;
-            output[OUTPUT_INDEX + 2] = YX;
-            output[OUTPUT_INDEX + 3] = YY;
+            output[OUTPUT_INDEX + 0] += XX;
+            output[OUTPUT_INDEX + 1] += XY;
+            output[OUTPUT_INDEX + 2] += YX;
+            output[OUTPUT_INDEX + 3] += YY;
                 
 #ifdef DEBUG
             printf("-- BIX: %ld/%d, BIY: %ld/%d, TIX: %ld || ABI: %ld, CI: %ld, TI: %ld || BASELINE_INDEX: %ld, OUTPUT_INDEX: %ld\n",
@@ -141,10 +141,10 @@ __global__ void correlator(const ArrayTensor<Device::CUDA, IT> input,
 
             const U64 OUTPUT_INDEX = (BASELINE_INDEX * C * T * OUTPUT_POLS) + (CI * T * OUTPUT_POLS) + (TI * OUTPUT_POLS);
 
-            output[OUTPUT_INDEX + 0] = XX;
-            output[OUTPUT_INDEX + 1] = XY;
-            output[OUTPUT_INDEX + 2] = YX;
-            output[OUTPUT_INDEX + 3] = YY;
+            output[OUTPUT_INDEX + 0] += XX;
+            output[OUTPUT_INDEX + 1] += XY;
+            output[OUTPUT_INDEX + 2] += YX;
+            output[OUTPUT_INDEX + 3] += YY;
                 
 #ifdef DEBUG
             printf("-- BIX: %ld/%d, BIY: %ld/%d, TIX: %ld || ABI: %ld, CI: %ld, TI: %ld || AAI: %ld, ABI: %ld || BASELINE_INDEX: %ld, OUTPUT_INDEX: %ld\n",
@@ -210,10 +210,10 @@ __global__ void correlator_integrator(const ArrayTensor<Device::CUDA, IT> input,
 
         const U64 OUTPUT_INDEX = (BASELINE_INDEX * C * OUTPUT_POLS) + (CI * OUTPUT_POLS);
 
-        output[OUTPUT_INDEX + 0] = sumXX;
-        output[OUTPUT_INDEX + 1] = sumXY;
-        output[OUTPUT_INDEX + 2] = sumYX;
-        output[OUTPUT_INDEX + 3] = sumYY;
+        output[OUTPUT_INDEX + 0] += sumXX;
+        output[OUTPUT_INDEX + 1] += sumXY;
+        output[OUTPUT_INDEX + 2] += sumYX;
+        output[OUTPUT_INDEX + 3] += sumYY;
 
 #ifdef DEBUG
         printf("-- BIX: %ld/%d, BIY: %ld/%d, TIX: %ld || ABI: %ld, CI: %ld || AAI: %ld, ABI: %ld || BASELINE_INDEX: %ld, OUTPUT_INDEX: %ld\n",

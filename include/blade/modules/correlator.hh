@@ -47,7 +47,12 @@ class BLADE_API Correlator : public Module {
 
     constexpr Taint getTaint() const {
         return Taint::CONSUMER |
-               Taint::PRODUCER;
+               Taint::PRODUCER |
+               Taint::CHRONOUS;
+    }
+
+    constexpr U64 getComputeRatio() const {
+        return computeRatio;
     }
 
     std::string name() const {
@@ -66,6 +71,8 @@ class BLADE_API Correlator : public Module {
     const Input input;
     Output output;
 
+    U64 computeRatio;
+
     // Expected Shape
 
     const ArrayShape getOutputBufferShape() const {
@@ -74,7 +81,7 @@ class BLADE_API Correlator : public Module {
         return ArrayShape({
             static_cast<U64>((in.numberOfAspects() * (in.numberOfAspects() + 1)) / 2),
             static_cast<U64>(in.numberOfFrequencyChannels()),
-            static_cast<U64>(in.numberOfTimeSamples() / config.integrationRate),
+            static_cast<U64>(1),
             static_cast<U64>((in.numberOfPolarizations() == 2) ? 4 : 0),
         });
     }

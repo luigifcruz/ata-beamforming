@@ -12,7 +12,8 @@ Correlator<IT, OT>::Correlator(const Config& config,
                            const Stream& stream)
         : Module(correlator_program),
           config(config),
-          input(input) {
+          input(input),
+          computeRatio(config.integrationRate) {
 
     // Check configuration values.
 
@@ -40,9 +41,8 @@ Correlator<IT, OT>::Correlator(const Config& config,
         BL_CHECK_THROW(Result::ERROR);
     }
 
-    if (config.integrationRate != 1 && getInputBuffer().shape().numberOfTimeSamples() != config.integrationRate) {
-        BL_FATAL("Integration size ({}) should be one (1) or the number of time samples ({}).",
-                 config.integrationRate, getInputBuffer().shape().numberOfTimeSamples());
+    if (config.integrationRate < 1) {
+        BL_FATAL("Integration size ({}) should be one (1) or more.", config.integrationRate);
         BL_CHECK_THROW(Result::ERROR);
     }
 
@@ -68,9 +68,9 @@ Correlator<IT, OT>::Correlator(const Config& config,
     }
 
     // Enable Integration kernel if integration size is more than one.
-    if (config.integrationRate > 1) {
+    if (getInputBuffer().shape().numberOfTimeSamples() > 1) {
         kernel_key = "correlator_integrator";
-        pretty_kernel_key = "Global Memory Integrator";
+        pretty_kernel_key = "Global Memory Time Integrator";
     }
 
     if (kernel_key.empty()) {
@@ -115,7 +115,10 @@ Correlator<IT, OT>::Correlator(const Config& config,
 }
 
 template<typename IT, typename OT>
-Result Correlator<IT, OT>::process(const U64&, const Stream& stream) {
+Result Correlator<IT, OT>::process(const U64& currentStepCount, const Stream& stream) {
+    if (currentStepCount == 0) {
+        cudaMemsetAsync(output.buf.data(), 0, output.buf.size_bytes(), stream);
+    }
     return runKernel("main", stream, input.buf, output.buf);
 }
 

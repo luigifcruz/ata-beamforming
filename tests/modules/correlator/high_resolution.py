@@ -23,6 +23,7 @@ if __name__ == "__main__":
     number_of_channels = 262144
     number_of_samples = 1
     number_of_polarizations = 2
+    integration_rate = 8
 
     number_of_baselines = int((number_of_antennas * (number_of_antennas + 1)) / 2)
 
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     output_shape = (number_of_baselines, number_of_channels, number_of_samples, 4)
 
     config = {
-        'integration_size': 1,
+        'integration_size': integration_rate,
         'block_size': 32
     }
 
@@ -47,7 +48,9 @@ if __name__ == "__main__":
     #
 
     pipeline = Pipeline(input_shape, output_shape, config)
-    pipeline(host_input, host_output)
+    while True:
+        if pipeline(host_input, host_output):
+            break
 
     #
     # Python Implementation
@@ -56,17 +59,19 @@ if __name__ == "__main__":
     py_output = np.zeros(output_shape, dtype=np.complex64)
     
     ibline = 0
-    for iant1 in range(number_of_antennas):
-        for iant2 in range(iant1, number_of_antennas):
-            ant1 = bl_input[iant1, ...]
-            ant2 = bl_input[iant2, ...]
+    for _ in range(integration_rate):
+        for iant1 in range(number_of_antennas):
+            for iant2 in range(iant1, number_of_antennas):
+                ant1 = bl_input[iant1, ...]
+                ant2 = bl_input[iant2, ...]
 
-            py_output[ibline, :, :, 0] = ant1[:, :, 0] * np.conj(ant2[:, :, 0])
-            py_output[ibline, :, :, 1] = ant1[:, :, 0] * np.conj(ant2[:, :, 1])
-            py_output[ibline, :, :, 2] = ant1[:, :, 1] * np.conj(ant2[:, :, 0])
-            py_output[ibline, :, :, 3] = ant1[:, :, 1] * np.conj(ant2[:, :, 1])
-            
-            ibline += 1
+                py_output[ibline, :, :, 0] += ant1[:, :, 0] * np.conj(ant2[:, :, 0])
+                py_output[ibline, :, :, 1] += ant1[:, :, 0] * np.conj(ant2[:, :, 1])
+                py_output[ibline, :, :, 2] += ant1[:, :, 1] * np.conj(ant2[:, :, 0])
+                py_output[ibline, :, :, 3] += ant1[:, :, 1] * np.conj(ant2[:, :, 1])
+                
+                ibline += 1
+        ibline = 0
 
     #
     # Compare Results
