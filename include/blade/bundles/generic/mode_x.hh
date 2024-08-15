@@ -57,22 +57,31 @@ class BLADE_API ModeX : public Bundle {
          : Bundle(stream), config(config), input(input) {
         BL_DEBUG("Initializing Mode-X Bundle.");
 
-        BL_DEBUG("Instantiating gatherer module.");
-        this->connect(gatherer, {
-            .axis = 2,
-            .multiplier = config.preCorrelatorGathererMultiplier,
+        if (config.preCorrelatorGathererMultiplier != 1) {
+            BL_DEBUG("Instantiating gatherer module.");
+            this->connect(gatherer, {
+                .axis = 2,
+                .multiplier = config.preCorrelatorGathererMultiplier,
 
-            .blockSize = config.gathererBlockSize,
-        }, {
-            .buf = input.buffer,
-        });
+                .blockSize = config.gathererBlockSize,
+            }, {
+                .buf = input.buffer,
+            });
+            BL_DEBUG("Instantiating input caster module.");
+            this->connect(inputCaster, {
+                .blockSize = config.casterBlockSize,
+            }, {
+                .buf = gatherer->getOutputBuffer(),
+            });
+        } else {
+            BL_DEBUG("Bypassing gatherer module. Instantiating input caster module.");
+            this->connect(inputCaster, {
+                .blockSize = config.casterBlockSize,
+            }, {
+                .buf = input.buffer,
+            });
+        }
 
-        BL_DEBUG("Instantiating input caster module.");
-        this->connect(inputCaster, {
-            .blockSize = config.casterBlockSize,
-        }, {
-            .buf = gatherer->getOutputBuffer(),
-        });
 
         BL_DEBUG("Instantiating channelizer module.");
         this->connect(channelizer, {
@@ -110,10 +119,10 @@ class BLADE_API ModeX : public Bundle {
     using InputCaster = typename Modules::Caster<IT, OT>;
     std::shared_ptr<InputCaster> inputCaster;
 
-    using PreChannelizer = typename Modules::Channelizer<CF32, CF32>;
+    using PreChannelizer = typename Modules::Channelizer<OT, OT>;
     std::shared_ptr<PreChannelizer> channelizer;
 
-    using Correlator = typename Modules::Correlator<CF32, CF32>;
+    using Correlator = typename Modules::Correlator<OT, OT>;
     std::shared_ptr<Correlator> correlator;
 };
 
