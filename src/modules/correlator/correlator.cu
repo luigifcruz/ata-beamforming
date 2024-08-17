@@ -126,13 +126,13 @@ __global__ void correlator(const ArrayTensor<Device::CUDA, IT> input,
         for (U64 TI = 0; TI < T; TI++) {
             const U64 ANTENNA_A_INDEX = (AAI * C * T * P) + (CI * T * P) + (TI * P);
 
-            const IT& AVAX = input[ANTENNA_A_INDEX + 0];  // Antenna Voltage A Pol X
-            const IT& AVAY = input[ANTENNA_A_INDEX + 1];  // Antenna Voltage A Pol Y
+            const auto AVAX = static_cast<CF64>(input[ANTENNA_A_INDEX + 0]);  // Antenna Voltage A Pol X
+            const auto AVAY = static_cast<CF64>(input[ANTENNA_A_INDEX + 1]);  // Antenna Voltage A Pol Y
 
             const U64 ANTENNA_B_INDEX = (ABI * C * T * P) + (CI * T * P) + (TI * P);
 
-            const IT& AVBX = input[ANTENNA_B_INDEX + 0];  // Antenna Voltage B Pol X
-            const IT& AVBY = input[ANTENNA_B_INDEX + 1];  // Antenna Voltage B Pol Y
+            const auto AVBX = static_cast<CF64>(input[ANTENNA_B_INDEX + 0]);  // Antenna Voltage B Pol X
+            const auto AVBY = static_cast<CF64>(input[ANTENNA_B_INDEX + 1]);  // Antenna Voltage B Pol Y
 
             const OT XX = AVAX * AVBX.conj();  // XX
             const OT XY = AVAX * AVBY.conj();  // XY

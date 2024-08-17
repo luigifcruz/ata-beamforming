@@ -24,6 +24,14 @@ class alignas(2 * sizeof(T)) complex {
     __host__ __device__ complex(T r) : _real(r), _imag(0) {}
     __host__ __device__ complex(T r, T i) : _real(r), _imag(i) {}
 
+    // CF32 -> CF64
+    __host__ __device__ explicit complex(const complex<float>& rhs) : _real(static_cast<T>(rhs.real())), _imag(static_cast<T>(rhs.imag())) {}
+
+    // CF64 -> CF32
+    __host__ __device__ operator complex<float>() const {
+        return complex<float>(static_cast<float>(_real), static_cast<float>(_imag));
+    }
+
     __host__ __device__ complex<T> operator+(const complex<T>& rhs) const {
         return complex<T>(_real + rhs._real, _imag + rhs._imag);
     }
