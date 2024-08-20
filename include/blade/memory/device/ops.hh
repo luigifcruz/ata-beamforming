@@ -2,6 +2,7 @@
 #define BLADE_MEMORY_DEVICE_OPS_HH
 
 #include <cstdint>
+#include <type_traits>
 
 #include <cuda_fp16.h>
 
@@ -23,6 +24,10 @@ class alignas(2 * sizeof(T)) complex {
     __host__ __device__ complex() : _real(0), _imag(0) {}
     __host__ __device__ complex(T r) : _real(r), _imag(0) {}
     __host__ __device__ complex(T r, T i) : _real(r), _imag(i) {}
+
+    template <typename U, typename = std::enable_if_t<std::is_same<U, float>::value || std::is_same<U, double>::value>>
+    __host__ __device__ explicit complex(const complex<U>& rhs) : _real(static_cast<T>(rhs.real())), _imag(static_cast<T>(rhs.imag())) {}
+    // TODO: Add support for half to float/double conversion.
 
     __host__ __device__ complex<T> operator+(const complex<T>& rhs) const {
         return complex<T>(_real + rhs._real, _imag + rhs._imag);
