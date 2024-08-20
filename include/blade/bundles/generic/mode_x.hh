@@ -24,6 +24,7 @@ class BLADE_API ModeX : public Bundle {
         U64 preCorrelatorStackerMultiplier = 1;
 
         U64 correlatorIntegrationRate = 1;
+        U64 correlatorConjugateAntennaIndex = 1;
 
         U64 stackerBlockSize = 512;
         U64 casterBlockSize = 512;
@@ -87,6 +88,7 @@ class BLADE_API ModeX : public Bundle {
         BL_DEBUG("Instantiating correlator module.");
         this->connect(correlator, {
             .integrationRate = config.correlatorIntegrationRate,
+            .conjugateAntennaIndex = config.correlatorConjugateAntennaIndex,
 
             .blockSize = config.correlatorBlockSize,
         }, {

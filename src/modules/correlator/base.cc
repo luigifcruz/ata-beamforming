@@ -84,7 +84,8 @@ Correlator<IT, OT>::Correlator(const Config& config,
             getInputBuffer().shape().numberOfFrequencyChannels(),
             getInputBuffer().shape().numberOfTimeSamples(),
             getInputBuffer().shape().numberOfPolarizations(),
-            config.blockSize
+            config.blockSize,
+            config.conjugateAntennaIndex
         )
     );
 

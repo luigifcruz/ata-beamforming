@@ -17,7 +17,7 @@ using namespace Blade;
 // Global memory version without shared memory.
 //
 
-template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 BLOCK_SIZE>
+template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 BLOCK_SIZE, U64 CONJUGATE_ANTENNA>
 __global__ void correlator(const ArrayTensor<Device::CUDA, IT> input, 
                                  ArrayTensor<Device::CUDA, OT> output) {
     // 1. Load antenna A and B data.
@@ -55,10 +55,22 @@ __global__ void correlator(const ArrayTensor<Device::CUDA, IT> input,
             const auto AVBX = static_cast<CF64>(input[ANTENNA_B_INDEX + 0]);  // Antenna Voltage B Pol X
             const auto AVBY = static_cast<CF64>(input[ANTENNA_B_INDEX + 1]);  // Antenna Voltage B Pol Y
 
-            const auto XX = AVAX * AVBX.conj();  // XX
-            const auto XY = AVAX * AVBY.conj();  // XY
-            const auto YX = AVAY * AVBX.conj();  // YX
-            const auto YY = AVAY * AVBY.conj();  // YY
+            auto XX = static_cast<CF64>(0);
+            auto XY = static_cast<CF64>(0);
+            auto YX = static_cast<CF64>(0);
+            auto YY = static_cast<CF64>(0);
+
+            if constexpr (CONJUGATE_ANTENNA == 1) {
+                XX = AVAX * AVBX.conj();  // XX
+                XY = AVAX * AVBY.conj();  // XY
+                YX = AVAY * AVBX.conj();  // YX
+                YY = AVAY * AVBY.conj();  // YY
+            } else {
+                XX = AVAX.conj() * AVBX;  // XX
+                XY = AVAX.conj() * AVBY;  // XY
+                YX = AVAY.conj() * AVBX;  // YX
+                YY = AVAY.conj() * AVBY;  // YY
+            }
 
             const U64 OUTPUT_INDEX = (BASELINE_INDEX * C * T * OUTPUT_POLS) + (CI * T * OUTPUT_POLS) + (TI * OUTPUT_POLS);
 

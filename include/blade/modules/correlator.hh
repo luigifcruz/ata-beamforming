@@ -15,6 +15,7 @@ class BLADE_API Correlator : public Module {
 
     struct Config {
         U64 integrationRate = 1;
+        U64 conjugateAntennaIndex = 1;
 
         U64 blockSize = 32;
     };
