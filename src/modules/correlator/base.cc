@@ -29,8 +29,8 @@ Correlator<IT, OT>::Correlator(const Config& config,
         BL_CHECK_THROW(Result::ERROR);
     }
 
-    if (getInputBuffer().shape().numberOfTimeSamples() <= 0) {
-        BL_FATAL("Number of time samples ({}) should be more than zero.",
+    if (getInputBuffer().shape().numberOfTimeSamples() != 1) {
+        BL_FATAL("Number of time samples ({}) should be exactly one.",
                  getInputBuffer().shape().numberOfTimeSamples());
         BL_CHECK_THROW(Result::ERROR);
     }
@@ -55,23 +55,8 @@ Correlator<IT, OT>::Correlator(const Config& config,
 
     // Choose best kernel based on input buffer size.
 
-    std::string kernel_key;
-    std::string pretty_kernel_key;
-
-    // Enable Shared Memory correlator if the size if less than 100 KB.
-    if (((getInputBuffer().size() / getInputBuffer().shape().numberOfAspects()) * sizeof(IT)) < 100000) {
-        kernel_key = "correlator_sm";
-        pretty_kernel_key = "Shared Memory";
-    } else {
-        kernel_key = "correlator";
-        pretty_kernel_key = "Global Memory";
-    }
-
-    // Enable Integration kernel if integration size is more than one.
-    if (getInputBuffer().shape().numberOfTimeSamples() > 1) {
-        kernel_key = "correlator_integrator";
-        pretty_kernel_key = "Global Memory Time Integrator";
-    }
+    std::string kernel_key = "correlator";
+    std::string pretty_kernel_key = "Global Memory";
 
     if (kernel_key.empty()) {
         BL_FATAL("Can't find any compatible kernel.");
