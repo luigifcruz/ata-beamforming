@@ -55,29 +55,19 @@ __global__ void correlator(const ArrayTensor<Device::CUDA, IT> input,
             const auto AVBX = static_cast<CF64>(input[ANTENNA_B_INDEX + 0]);  // Antenna Voltage B Pol X
             const auto AVBY = static_cast<CF64>(input[ANTENNA_B_INDEX + 1]);  // Antenna Voltage B Pol Y
 
-            auto XX = static_cast<CF64>(0);
-            auto XY = static_cast<CF64>(0);
-            auto YX = static_cast<CF64>(0);
-            auto YY = static_cast<CF64>(0);
-
-            if constexpr (CONJUGATE_ANTENNA == 1) {
-                XX = AVAX * AVBX.conj();  // XX
-                XY = AVAX * AVBY.conj();  // XY
-                YX = AVAY * AVBX.conj();  // YX
-                YY = AVAY * AVBY.conj();  // YY
-            } else {
-                XX = AVAX.conj() * AVBX;  // XX
-                XY = AVAX.conj() * AVBY;  // XY
-                YX = AVAY.conj() * AVBX;  // YX
-                YY = AVAY.conj() * AVBY;  // YY
-            }
-
             const U64 OUTPUT_INDEX = (BASELINE_INDEX * C * T * OUTPUT_POLS) + (CI * T * OUTPUT_POLS) + (TI * OUTPUT_POLS);
 
-            output[OUTPUT_INDEX + 0] += static_cast<OT>(XX);
-            output[OUTPUT_INDEX + 1] += static_cast<OT>(XY);
-            output[OUTPUT_INDEX + 2] += static_cast<OT>(YX);
-            output[OUTPUT_INDEX + 3] += static_cast<OT>(YY);
+            if constexpr (CONJUGATE_ANTENNA == 1) {
+                output[OUTPUT_INDEX + 0] += static_cast<OT>(AVAX * AVBX.conj());  // AxBx'
+                output[OUTPUT_INDEX + 1] += static_cast<OT>(AVAX * AVBY.conj());  // AxBy'
+                output[OUTPUT_INDEX + 2] += static_cast<OT>(AVAY * AVBX.conj());  // AyBx'
+                output[OUTPUT_INDEX + 3] += static_cast<OT>(AVAY * AVBY.conj());  // AyBy'
+            } else {
+                output[OUTPUT_INDEX + 0] += static_cast<OT>(AVAX.conj() * AVBX);  // Ax'Bx
+                output[OUTPUT_INDEX + 1] += static_cast<OT>(AVAX.conj() * AVBY);  // Ax'By
+                output[OUTPUT_INDEX + 2] += static_cast<OT>(AVAY.conj() * AVBX);  // Ay'Bx
+                output[OUTPUT_INDEX + 3] += static_cast<OT>(AVAY.conj() * AVBY);  // Ay'By
+            }
                 
 #ifdef DEBUG
             printf("-- BIX: %ld/%d, BIY: %ld/%d, TIX: %ld || ABI: %ld, CI: %ld, TI: %ld || AAI: %ld, ABI: %ld || BASELINE_INDEX: %ld, OUTPUT_INDEX: %ld\n",
