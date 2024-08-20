@@ -46,6 +46,12 @@ Correlator<IT, OT>::Correlator(const Config& config,
         BL_CHECK_THROW(Result::ERROR);
     }
 
+    if (config.conjugateAntennaIndex > 1) {
+        BL_FATAL("Conjugate antenna index ({}) should be zero (0) for Antenna A or one (1) for Antenna B.",
+                 config.conjugateAntennaIndex);
+        BL_CHECK_THROW(Result::ERROR);
+    }
+
     // TODO: Implement other polarizations.
     if (getInputBuffer().shape().numberOfPolarizations() != 2) {
         BL_FATAL("Number of polarizations ({}) should be two. Feature not implemented.",
@@ -84,7 +90,8 @@ Correlator<IT, OT>::Correlator(const Config& config,
             getInputBuffer().shape().numberOfFrequencyChannels(),
             getInputBuffer().shape().numberOfTimeSamples(),
             getInputBuffer().shape().numberOfPolarizations(),
-            config.blockSize
+            config.blockSize,
+            config.conjugateAntennaIndex
         )
     );
 
@@ -97,6 +104,7 @@ Correlator<IT, OT>::Correlator(const Config& config,
                                getOutputBuffer().shape());
     BL_INFO("Integration Rate: {}", config.integrationRate);
     BL_INFO("Correlator Kernel: {}", pretty_kernel_key);
+    BL_INFO("Antenna Conjugation: {}", (config.conjugateAntennaIndex) ? "Antenna B" : "Antenna A");
 }
 
 template<typename IT, typename OT>

@@ -22,7 +22,6 @@ BENCHMARK(BM_Correlator_Compute)
     ->UseManualTime()
     ->Unit(bm::kMillisecond);
 
-
 BENCHMARK(BM_Correlator_Compute)
     ->Iterations(2<<11)
     ->Args({28, 65536, 1, 2, 1, 32})
@@ -32,11 +31,5 @@ BENCHMARK(BM_Correlator_Compute)
 BENCHMARK(BM_Correlator_Compute)
     ->Iterations(2<<11)
     ->Args({28, 262144, 1, 2, 1, 32})
-    ->UseManualTime()
-    ->Unit(bm::kMillisecond);
-
-BENCHMARK(BM_Correlator_Compute)
-    ->Iterations(2<<6)
-    ->Args({28, 192, 8192, 2, 8192, 32})
     ->UseManualTime()
     ->Unit(bm::kMillisecond);
