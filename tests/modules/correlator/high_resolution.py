@@ -20,7 +20,7 @@ class Pipeline:
 if __name__ == "__main__":
     # This assumes that the input data was already transferred to the frequency domain.
     number_of_antennas = 28
-    number_of_channels = 262144
+    number_of_channels = 2**16
     number_of_samples = 1
     number_of_polarizations = 2
     integration_rate = 8
