@@ -29,12 +29,6 @@ Correlator<IT, OT>::Correlator(const Config& config,
         BL_CHECK_THROW(Result::ERROR);
     }
 
-    if (getInputBuffer().shape().numberOfTimeSamples() != 1) {
-        BL_FATAL("Number of time samples ({}) should be exactly one.",
-                 getInputBuffer().shape().numberOfTimeSamples());
-        BL_CHECK_THROW(Result::ERROR);
-    }
-
     if ((getInputBuffer().shape().numberOfFrequencyChannels() % config.blockSize) != 0) {
         BL_FATAL("Number of frequency channels ({}) should be divisible by block size ({}).",
                  getInputBuffer().shape().numberOfFrequencyChannels(), config.blockSize);

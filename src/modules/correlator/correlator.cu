@@ -21,8 +21,9 @@ template<typename IT, typename OT, U64 A, U64 C, U64 T, U64 P, U64 BLOCK_SIZE, U
 __global__ void correlator(const ArrayTensor<Device::CUDA, IT> input, 
                                  ArrayTensor<Device::CUDA, OT> output) {
     // 1. Load antenna A and B data.
-    // 2. Do the multiply conjugate (XX = AX * CONJ(BX)).
-    // 3. Store the result in the output tensor.
+    // 2. Create temporary variables to accumulate the result.
+    // 3. Add the multiply conjugate (XX = AX * CONJ(BX)) result to the temporary variables.
+    // 4. Store the result in the output tensor.
 
     // Get Block index.
     
@@ -43,6 +44,11 @@ __global__ void correlator(const ArrayTensor<Device::CUDA, IT> input,
 
     for (U64 ABI = AAI; ABI < A; ABI++) {
         const U64 BASELINE_INDEX = ((AAI * (2 * A - AAI + 1)) / 2) + (ABI - AAI);
+        
+        OT sumXX = OT(0.0f, 0.0f);
+        OT sumXY = OT(0.0f, 0.0f);
+        OT sumYX = OT(0.0f, 0.0f);
+        OT sumYY = OT(0.0f, 0.0f);
 
         for (U64 TI = 0; TI < T; TI++) {
             const U64 ANTENNA_A_INDEX = (AAI * C * T * P) + (CI * T * P) + (TI * P);
@@ -55,24 +61,29 @@ __global__ void correlator(const ArrayTensor<Device::CUDA, IT> input,
             const auto AVBX = static_cast<CF64>(input[ANTENNA_B_INDEX + 0]);  // Antenna Voltage B Pol X
             const auto AVBY = static_cast<CF64>(input[ANTENNA_B_INDEX + 1]);  // Antenna Voltage B Pol Y
 
-            const U64 OUTPUT_INDEX = (BASELINE_INDEX * C * T * OUTPUT_POLS) + (CI * T * OUTPUT_POLS) + (TI * OUTPUT_POLS);
-
             if constexpr (CONJUGATE_ANTENNA == 1) {
-                output[OUTPUT_INDEX + 0] += static_cast<OT>(AVAX * AVBX.conj());  // AxBx'
-                output[OUTPUT_INDEX + 1] += static_cast<OT>(AVAX * AVBY.conj());  // AxBy'
-                output[OUTPUT_INDEX + 2] += static_cast<OT>(AVAY * AVBX.conj());  // AyBx'
-                output[OUTPUT_INDEX + 3] += static_cast<OT>(AVAY * AVBY.conj());  // AyBy'
+                sumXX += static_cast<OT>(AVAX * AVBX.conj());  // AxBx'
+                sumXY += static_cast<OT>(AVAX * AVBY.conj());  // AxBy'
+                sumYX += static_cast<OT>(AVAY * AVBX.conj());  // AyBx'
+                sumYY += static_cast<OT>(AVAY * AVBY.conj());  // AyBy'
             } else {
-                output[OUTPUT_INDEX + 0] += static_cast<OT>(AVAX.conj() * AVBX);  // Ax'Bx
-                output[OUTPUT_INDEX + 1] += static_cast<OT>(AVAX.conj() * AVBY);  // Ax'By
-                output[OUTPUT_INDEX + 2] += static_cast<OT>(AVAY.conj() * AVBX);  // Ay'Bx
-                output[OUTPUT_INDEX + 3] += static_cast<OT>(AVAY.conj() * AVBY);  // Ay'By
+                sumXX += static_cast<OT>(AVAX.conj() * AVBX);  // Ax'Bx
+                sumXY += static_cast<OT>(AVAX.conj() * AVBY);  // Ax'By
+                sumYX += static_cast<OT>(AVAY.conj() * AVBX);  // Ay'Bx
+                sumYY += static_cast<OT>(AVAY.conj() * AVBY);  // Ay'By
             }
-                
-#ifdef DEBUG
-            printf("-- BIX: %ld/%d, BIY: %ld/%d, TIX: %ld || ABI: %ld, CI: %ld, TI: %ld || AAI: %ld, ABI: %ld || BASELINE_INDEX: %ld, OUTPUT_INDEX: %ld\n",
-                   BIX, gridDim.x, BIY, gridDim.y, TIX, ABI, CI, TI, ANTENNA_A_INDEX, ANTENNA_B_INDEX, BASELINE_INDEX, OUTPUT_INDEX);
-#endif
         }
+
+        const U64 OUTPUT_INDEX = (BASELINE_INDEX * C * OUTPUT_POLS) + (CI * OUTPUT_POLS);
+
+        output[OUTPUT_INDEX + 0] += sumXX;
+        output[OUTPUT_INDEX + 1] += sumXY;
+        output[OUTPUT_INDEX + 2] += sumYX;
+        output[OUTPUT_INDEX + 3] += sumYY;
+
+#ifdef DEBUG
+        printf("-- BIX: %ld/%d, BIY: %ld/%d, TIX: %ld || ABI: %ld, CI: %ld || AAI: %ld, ABI: %ld || BASELINE_INDEX: %ld, OUTPUT_INDEX: %ld\n",
+               BIX, gridDim.x, BIY, gridDim.y, TIX, ABI, CI, AAI, ABI, BASELINE_INDEX, OUTPUT_INDEX);
+#endif
     }
 }
