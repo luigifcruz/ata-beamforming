@@ -17,13 +17,20 @@ Pipeline::Pipeline()
             BL_FATAL("Failed to create CUDA stream: {}", err);
         });
     }
+
+    _events.resize(2);
+    for (U64 i = 0; i < _streams.size(); i++) {
+        BL_CUDA_CHECK_THROW(cudaEventCreateWithFlags(_events[i], cudaEventDisableTiming), [&]{
+            BL_FATAL("Failed to create CUDA event: {}", err);
+        });
+    }
 }
 
 void Pipeline::addModule(const std::shared_ptr<Module>& module) {
     cudaError_t val;
     if ((val = cudaPeekAtLastError()) != cudaSuccess) {
         const char* err = cudaGetErrorString(val);
-        BL_FATAL("Error while creating module '{}' in position '{}': '{}'", 
+        BL_FATAL("Error while creating module '{}' in position '{}': '{}'",
                 module->name(), _modules.size(), err);
         std::exit(1);
     }
@@ -46,6 +53,10 @@ Pipeline::~Pipeline() {
         cudaStreamDestroy(_streams[i]);
     }
 
+    for (U64 i = 0; i < _events.size(); i++) {
+        cudaEventDestroy(_events[i]);
+    }
+
     U64 pos = 0;
     for (auto& module : _modules) {
         const std::string moduleName = module->name();
@@ -60,8 +71,22 @@ Pipeline::~Pipeline() {
         }
         pos += 1;
     }
-    
+
     _computeStepRatios.clear();
+}
+
+Result Pipeline::record(const U64& index) {
+    BL_CUDA_CHECK(cudaEventRecord(_events[index], _streams[index]), [&]{
+        BL_FATAL("Failed to record event: {}", err);
+    });
+    return Result::SUCCESS;
+}
+
+Result Pipeline::wait(const U64& index, const U64& waitForIndex) {
+    BL_CUDA_CHECK(cudaStreamWaitEvent(_streams[index], _events[waitForIndex]), [&]{
+        BL_FATAL("Failed to wait event: {}", err);
+    });
+    return Result::SUCCESS;
 }
 
 Result Pipeline::synchronize(const U64& index) {
@@ -99,7 +124,7 @@ Result Pipeline::compute(const U64& index) {
     for (auto& module : _modules) {
         localStepCount = _computeStepCount / localStepOffset % _computeStepRatios[localRatioIndex];
 
-        BL_TRACE("[M: '{}', R: {}]: Step Count: {}, Step Offset: {}, Step Ratio: {}", 
+        BL_TRACE("[M: '{}', R: {}]: Step Count: {}, Step Offset: {}, Step Ratio: {}",
                  module->name(), module->getComputeRatio(), localStepCount, localStepOffset, _computeStepRatios[localRatioIndex]);
 
         const auto& result = module->process(localStepCount, _streams[index]);

@@ -21,6 +21,7 @@ class BLADE_API Runner : public Pipeline {
                                  const bool& didOutput)> DequeueCallback;
 
     Result enqueue(const std::function<Result()>& inputCallback,
+                   const std::function<Result()>& resultCallback,
                    const std::function<Result()>& outputCallback,
                    U64 inputId,
                    U64 outputId);

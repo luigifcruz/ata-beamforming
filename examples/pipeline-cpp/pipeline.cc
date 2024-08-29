@@ -35,8 +35,12 @@ class ExamplePipeline : public Runner {
         return Result::SUCCESS;
     }
 
-    Result transferOut(ArrayTensor<Device::CPU, OT>& cpuOutputBuffer) {
+    Result transferResult() {
         BL_CHECK(this->copy(outputBuffer, outputCaster->getOutputBuffer()));
+        return Result::SUCCESS;
+    }
+
+    Result transferOut(ArrayTensor<Device::CPU, OT>& cpuOutputBuffer) {
         BL_CHECK(this->copy(cpuOutputBuffer, outputBuffer));
         return Result::SUCCESS;
     }
@@ -53,7 +57,7 @@ class ExamplePipeline : public Runner {
 int main() {
     using Pipeline = ExamplePipeline<I8, F32>;
 
-    // Configuring pipeline. 
+    // Configuring pipeline.
     //
     // This example will take I8 samples as input and produce F32 as output.
     // It will also perform a concatenation in the time samples dimension.
@@ -68,7 +72,7 @@ int main() {
     // Allocating buffers.
     //
     // The data will be stored in the CPU memory, but the pipeline will
-    // transfer it to the GPU memory before processing. We need to allocate 
+    // transfer it to the GPU memory before processing. We need to allocate
     // multiple buffers to allow the pipeline to process multiple batches
     // in parallel.
 
@@ -92,11 +96,11 @@ int main() {
     // important because while one batch is being uploaded to the GPU, the
     // other one is being processed.
     //
-    // The output of each batch will be printed to the console. The output of 
+    // The output of each batch will be printed to the console. The output of
     // all batches should be the same because the input data is not changing.
     // Expect the output of each batch to be the input data repeated 10 times.
 
-    
+
     U64 dequeueCount = 0;
     U64 enqueueCount = 0;
 
@@ -107,12 +111,15 @@ int main() {
         auto inputCallback = [&](){
             return pipeline->transferIn(inputBuffer[enqueueCount++ % 2]);
         };
+        auto resultCallback = [&](){
+            return pipeline->transferResult();
+        };
         auto outputCallback = [&](){
             return pipeline->transferOut(outputBuffer[dequeueCount++ % 2]);
         };
-        pipeline->enqueue(inputCallback, outputCallback, enqueueCount, dequeueCount);
+        pipeline->enqueue(inputCallback, resultCallback, outputCallback, enqueueCount, dequeueCount);
 
-        pipeline->dequeue([&](const U64& inputId, 
+        pipeline->dequeue([&](const U64& inputId,
                               const U64& outputId,
                               const bool& didOutput){
             BL_INFO("Input ID: {} | Output ID: {} | Did Output: {}", inputId, outputId, didOutput);

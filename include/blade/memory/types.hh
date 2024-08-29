@@ -27,15 +27,27 @@
 #define BL_PHYSICAL_CONSTANT_PI M_PI
 #endif
 
-#ifndef BL_DEG_TO_RAD 
+#ifndef BL_DEG_TO_RAD
 #define BL_DEG_TO_RAD(DEG) (DEG * M_PI / 180.0)
 #endif
 
 #ifndef BL_RAD_TO_DEG
-#define BL_RAD_TO_DEG(RAD) (RAD * 180.0 / M_PI) 
+#define BL_RAD_TO_DEG(RAD) (RAD * 180.0 / M_PI)
 #endif
 
 namespace Blade {
+
+struct Event {
+    void* handle = nullptr;
+
+    operator CUevent_st*() const {
+        return reinterpret_cast<CUevent_st*>(handle);
+    }
+
+    operator CUevent_st**() {
+        return reinterpret_cast<CUevent_st**>(&handle);
+    }
+};
 
 struct Stream {
     void* handle = nullptr;
