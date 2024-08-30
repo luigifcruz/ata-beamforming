@@ -12,7 +12,8 @@ class BLADE_API Integrator : public Module {
     // Configuration
 
     struct Config {
-        U64 rate = 1;
+        U64 size = 1;  // Number of time samples to integrate within one block.
+        U64 rate = 1;  // Number of blocks to integrate together.
 
         U64 blockSize = 512;
     };
@@ -70,6 +71,17 @@ class BLADE_API Integrator : public Module {
     Output output;
 
     U64 computeRatio;
+
+    const ArrayShape getOutputBufferShape() const {
+        const auto& in = getInputBuffer().shape();
+
+        return ArrayShape({
+            static_cast<U64>(in.numberOfAspects()),
+            static_cast<U64>(in.numberOfFrequencyChannels()),
+            static_cast<U64>(in.numberOfTimeSamples() / config.size),
+            static_cast<U64>(in.numberOfPolarizations()),
+        });
+    }
 };
 
 }  // namespace Blade::Modules

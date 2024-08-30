@@ -23,8 +23,9 @@ Integrator<IT, OT>::Integrator(const Config& config,
         BL_CHECK_THROW(Result::ERROR);
     }
 
-    if (input.buf.shape().numberOfTimeSamples() != 1) {
-        BL_FATAL("Number of time samples should be one.");
+    if ((input.buf.shape().numberOfTimeSamples() % config.size) != 0) {
+        BL_FATAL("Input number of time samples ({}) is not divisible by the integration size ({}).",
+                 input.buf.shape().numberOfTimeSamples(), config.size);
         BL_CHECK_THROW(Result::ERROR);
     }
 
@@ -37,24 +38,28 @@ Integrator<IT, OT>::Integrator(const Config& config,
             "integrator",
             // Kernel grid & block size.
             PadGridSize(
-                getInputBuffer().size(),
+                getInputBuffer().size() / getInputBuffer().shape().numberOfPolarizations() / config.size,
                 config.blockSize
             ),
             config.blockSize,
             // Kernel templates.
             TypeInfo<IT>::name,
-            TypeInfo<OT>::name
+            TypeInfo<OT>::name,
+            config.size,
+            getInputBuffer().shape().numberOfPolarizations(),
+            getInputBuffer().size() / getInputBuffer().shape().numberOfPolarizations() / config.size
         )
     );
 
     // Allocate output buffers.
-    output.buf = ArrayTensor<Device::CUDA, OT>(input.buf.shape());
+    output.buf = ArrayTensor<Device::CUDA, OT>(getOutputBufferShape());
 
     // Print configuration values.
 
     BL_INFO("Type: {} -> {}", TypeInfo<IT>::name, TypeInfo<OT>::name);
     BL_INFO("Shape: {} -> {}", getInputBuffer().shape(),
                                getOutputBuffer().shape());
+    BL_INFO("Size: {}", config.size);
     BL_INFO("Rate: {}", config.rate);
 }
 

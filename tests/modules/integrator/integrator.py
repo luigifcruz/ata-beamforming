@@ -18,11 +18,12 @@ class Pipeline:
         self.copy(buf, self.output.buf)
 
 
-def test(A, F, T, P, Rate):
+def test(A, F, T, P, Size, Rate):
     in_shape = (A, F, T, P)
-    out_shape = (A, F, T, P)
+    out_shape = (A, F, int(T / Size), P)
 
     config = {
+        "size": Size,
         "rate": Rate,
     }
 
@@ -49,7 +50,7 @@ def test(A, F, T, P, Rate):
 
     py_output = np.zeros(out_shape, dtype=np.complex64)
     for _ in range(Rate):
-        py_output += bl_input
+        py_output += np.sum(np.reshape(bl_input, (A, F, int(T / Size), Size, P)), axis=3)
 
     #
     # Compare Results
@@ -64,4 +65,5 @@ if __name__ == "__main__":
          int(sys.argv[2]),
          int(sys.argv[3]),
          int(sys.argv[4]),
-         int(sys.argv[5]))
+         int(sys.argv[5]),
+         int(sys.argv[6]))
