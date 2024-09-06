@@ -8,20 +8,18 @@
 #ifndef BL_FMT_OS_H_
 #define BL_FMT_OS_H_
 
-#include <cerrno>
-#ifndef BL_FMT_IMPORT_STD
+#include "format.h"
+
+#ifndef BL_FMT_MODULE
+#  include <cerrno>
 #  include <cstddef>
 #  include <cstdio>
 #  include <system_error>  // std::system_error
-#endif
 
-#include "format.h"
-
-#if defined __APPLE__ || defined(__FreeBSD__)
 #  if BL_FMT_HAS_INCLUDE(<xlocale.h>)
-#    include <xlocale.h>  // for LC_NUMERIC_MASK on OS X
+#    include <xlocale.h>  // LC_NUMERIC_MASK on macOS
 #  endif
-#endif
+#endif  // BL_FMT_MODULE
 
 #ifndef BL_FMT_USE_FCNTL
 // UWP doesn't provide _pipe.

@@ -8,16 +8,15 @@
 #ifndef BL_FMT_XCHAR_H_
 #define BL_FMT_XCHAR_H_
 
-#ifndef BL_FMT_IMPORT_STD
-#  include <cwchar>
-#endif
-
 #include "color.h"
 #include "format.h"
 #include "ranges.h"
 
-#if !defined(BL_FMT_STATIC_THOUSANDS_SEPARATOR) && !defined(BL_FMT_IMPORT_STD)
-#  include <locale>
+#ifndef BL_FMT_MODULE
+#  include <cwchar>
+#  if !defined(BL_FMT_STATIC_THOUSANDS_SEPARATOR)
+#    include <locale>
+#  endif
 #endif
 
 BL_FMT_BEGIN_NAMESPACE

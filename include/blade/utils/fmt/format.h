@@ -38,7 +38,9 @@
 #  define BL_FMT_REMOVE_TRANSITIVE_INCLUDES
 #endif
 
-#ifndef BL_FMT_IMPORT_STD
+#include "base.h"
+
+#ifndef BL_FMT_MODULE
 #  include <cmath>             // std::signbit
 #  include <cstdint>           // uint32_t
 #  include <cstring>           // std::memcpy
@@ -51,24 +53,19 @@
 #  include <stdexcept>     // std::runtime_error
 #  include <string>        // std::string
 #  include <system_error>  // std::system_error
-#endif
-
-#include "base.h"
 
 // Checking BL_FMT_CPLUSPLUS for warning suppression in MSVC.
-#if BL_FMT_HAS_INCLUDE(<bit>) && BL_FMT_CPLUSPLUS > 201703L && \
-    !defined(BL_FMT_IMPORT_STD)
-#  include <bit>  // std::bit_cast
-#endif
+#  if BL_FMT_HAS_INCLUDE(<bit>) && BL_FMT_CPLUSPLUS > 201703L
+#    include <bit>  // std::bit_cast
+#  endif
 
 // libc++ supports string_view in pre-c++17.
-#if BL_FMT_HAS_INCLUDE(<string_view>) && \
-    (BL_FMT_CPLUSPLUS >= 201703L || defined(_LIBCPP_VERSION))
-#  ifndef BL_FMT_IMPORT_STD
+#  if BL_FMT_HAS_INCLUDE(<string_view>) && \
+      (BL_FMT_CPLUSPLUS >= 201703L || defined(_LIBCPP_VERSION))
 #    include <string_view>
+#    define BL_FMT_USE_STRING_VIEW
 #  endif
-#  define BL_FMT_USE_STRING_VIEW
-#endif
+#endif  // BL_FMT_MODULE
 
 #if defined __cpp_inline_variables && __cpp_inline_variables >= 201606L
 #  define BL_FMT_INLINE_VARIABLE inline
@@ -108,6 +105,13 @@
 #else
 #  define BL_FMT_NOINLINE
 #endif
+
+namespace std {
+template <> struct iterator_traits<bl::fmt::appender> {
+  using iterator_category = output_iterator_tag;
+  using value_type = char;
+};
+}  // namespace std
 
 #ifndef BL_FMT_THROW
 #  if BL_FMT_EXCEPTIONS
@@ -549,6 +553,7 @@ constexpr auto to_pointer(OutputIt, size_t) -> T* {
 template <typename T> auto to_pointer(basic_appender<T> it, size_t n) -> T* {
   buffer<T>& buf = get_container(it);
   auto size = buf.size();
+  buf.try_reserve(size + n);
   if (buf.capacity() < size + n) return nullptr;
   buf.try_resize(size + n);
   return buf.data() + size;
@@ -1069,6 +1074,8 @@ template <typename Locale> class format_facet : public Locale::facet {
   }
 };
 
+BL_FMT_END_EXPORT
+
 namespace detail {
 
 // Returns true if value is negative, false otherwise.
@@ -1120,7 +1127,7 @@ template <typename Char, typename Sign> constexpr auto sign(Sign s) -> Char {
 #if !BL_FMT_GCC_VERSION || BL_FMT_GCC_VERSION >= 604
   static_assert(std::is_same<Sign, sign_t>::value, "");
 #endif
-  return static_cast<Char>("\0-+ "[s]);
+  return static_cast<char>(((' ' << 24) | ('+' << 16) | ('-' << 8)) >> (s * 8));
 }
 
 template <typename T> BL_FMT_CONSTEXPR auto count_digits_fallback(T n) -> int {
@@ -2318,15 +2325,13 @@ BL_FMT_CONSTEXPR auto write(OutputIt out, T value) -> OutputIt {
   if (negative) abs_value = ~abs_value + 1;
   int num_digits = count_digits(abs_value);
   auto size = (negative ? 1 : 0) + static_cast<size_t>(num_digits);
-  auto it = reserve(out, size);
-  if (auto ptr = to_pointer<Char>(it, size)) {
+  if (auto ptr = to_pointer<Char>(out, size)) {
     if (negative) *ptr++ = static_cast<Char>('-');
     format_decimal<Char>(ptr, abs_value, num_digits);
     return out;
   }
-  if (negative) *it++ = static_cast<Char>('-');
-  it = format_decimal<Char>(it, abs_value, num_digits).end;
-  return base_iterator(out, it);
+  if (negative) *out++ = static_cast<Char>('-');
+  return format_decimal<Char>(out, abs_value, num_digits).end;
 }
 
 // DEPRECATED!
@@ -3630,9 +3635,7 @@ auto write(OutputIt out, monostate, format_specs = {}, locale_ref = {})
 template <typename Char, typename OutputIt>
 BL_FMT_CONSTEXPR auto write(OutputIt out, basic_string_view<Char> value)
     -> OutputIt {
-  auto it = reserve(out, value.size());
-  it = copy_noinline<Char>(value.begin(), value.end(), it);
-  return base_iterator(out, it);
+  return copy_noinline<Char>(value.begin(), value.end(), out);
 }
 
 template <typename Char, typename OutputIt, typename T,
@@ -3865,6 +3868,7 @@ BL_FMT_API void report_error(format_func func, int error_code,
                           const char* message) noexcept;
 }  // namespace detail
 
+BL_FMT_BEGIN_EXPORT
 BL_FMT_API auto vsystem_error(int error_code, string_view format_str,
                            format_args args) -> std::system_error;
 
@@ -3918,12 +3922,14 @@ class format_int {
   mutable char buffer_[buffer_size];
   char* str_;
 
-  template <typename UInt> auto format_unsigned(UInt value) -> char* {
+  template <typename UInt>
+  BL_FMT_CONSTEXPR20 auto format_unsigned(UInt value) -> char* {
     auto n = static_cast<detail::uint32_or_64_or_128_t<UInt>>(value);
     return detail::format_decimal(buffer_, n, buffer_size - 1).begin;
   }
 
-  template <typename Int> auto format_signed(Int value) -> char* {
+  template <typename Int>
+  BL_FMT_CONSTEXPR20 auto format_signed(Int value) -> char* {
     auto abs_value = static_cast<detail::uint32_or_64_or_128_t<Int>>(value);
     bool negative = value < 0;
     if (negative) abs_value = 0 - abs_value;
@@ -3933,26 +3939,30 @@ class format_int {
   }
 
  public:
-  explicit format_int(int value) : str_(format_signed(value)) {}
-  explicit format_int(long value) : str_(format_signed(value)) {}
-  explicit format_int(long long value) : str_(format_signed(value)) {}
-  explicit format_int(unsigned value) : str_(format_unsigned(value)) {}
-  explicit format_int(unsigned long value) : str_(format_unsigned(value)) {}
-  explicit format_int(unsigned long long value)
+  explicit BL_FMT_CONSTEXPR20 format_int(int value) : str_(format_signed(value)) {}
+  explicit BL_FMT_CONSTEXPR20 format_int(long value)
+      : str_(format_signed(value)) {}
+  explicit BL_FMT_CONSTEXPR20 format_int(long long value)
+      : str_(format_signed(value)) {}
+  explicit BL_FMT_CONSTEXPR20 format_int(unsigned value)
+      : str_(format_unsigned(value)) {}
+  explicit BL_FMT_CONSTEXPR20 format_int(unsigned long value)
+      : str_(format_unsigned(value)) {}
+  explicit BL_FMT_CONSTEXPR20 format_int(unsigned long long value)
       : str_(format_unsigned(value)) {}
 
   /// Returns the number of characters written to the output buffer.
-  auto size() const -> size_t {
+  BL_FMT_CONSTEXPR20 auto size() const -> size_t {
     return detail::to_unsigned(buffer_ - str_ + buffer_size - 1);
   }
 
   /// Returns a pointer to the output buffer content. No terminating null
   /// character is appended.
-  auto data() const -> const char* { return str_; }
+  BL_FMT_CONSTEXPR20 auto data() const -> const char* { return str_; }
 
   /// Returns a pointer to the output buffer content with terminating null
   /// character appended.
-  auto c_str() const -> const char* {
+  BL_FMT_CONSTEXPR20 auto c_str() const -> const char* {
     buffer_[buffer_size - 1] = '\0';
     return str_;
   }
@@ -3966,15 +3976,19 @@ struct formatter<T, Char, enable_if_t<detail::has_format_as<T>::value>>
     : formatter<detail::format_as_t<T>, Char> {
   template <typename FormatContext>
   auto format(const T& value, FormatContext& ctx) const -> decltype(ctx.out()) {
-    using base = formatter<detail::format_as_t<T>, Char>;
     auto&& val = format_as(value);  // Make an lvalue reference for format.
-    return base::format(val, ctx);
+    return formatter<detail::format_as_t<T>, Char>::format(val, ctx);
   }
 };
 
-#define BL_FMT_FORMAT_AS(Type, Base) \
-  template <typename Char>        \
-  struct formatter<Type, Char> : formatter<Base, Char> {}
+#define BL_FMT_FORMAT_AS(Type, Base)                                              \
+  template <typename Char>                                                     \
+  struct formatter<Type, Char> : formatter<Base, Char> {                       \
+    template <typename FormatContext>                                          \
+    auto format(Type value, FormatContext& ctx) const -> decltype(ctx.out()) { \
+      return formatter<Base, Char>::format(value, ctx);                        \
+    }                                                                          \
+  }
 
 BL_FMT_FORMAT_AS(signed char, int);
 BL_FMT_FORMAT_AS(unsigned char, unsigned);
@@ -4285,6 +4299,8 @@ extern template BL_FMT_API auto decimal_point_impl(locale_ref) -> char;
 extern template BL_FMT_API auto decimal_point_impl(locale_ref) -> wchar_t;
 #endif  // BL_FMT_HEADER_ONLY
 
+BL_FMT_END_EXPORT
+
 template <typename T, typename Char, type TYPE>
 template <typename FormatContext>
 BL_FMT_CONSTEXPR BL_FMT_INLINE auto native_formatter<T, Char, TYPE>::format(
@@ -4300,7 +4316,6 @@ BL_FMT_CONSTEXPR BL_FMT_INLINE auto native_formatter<T, Char, TYPE>::format(
   return write<Char>(ctx.out(), val, specs, ctx.locale());
 }
 
-BL_FMT_END_EXPORT
 }  // namespace detail
 
 BL_FMT_BEGIN_EXPORT
@@ -4318,7 +4333,7 @@ inline namespace literals {
  * **Example**:
  *
  *     using namespace bl::fmt::literals;
- *     bl::fmt::print("Elapsed time: {s:.2f} seconds", "s"_a=1.23);
+ *     bl::fmt::print("The answer is {answer}.", "answer"_a=42);
  */
 #  if BL_FMT_USE_NONTYPE_TEMPLATE_ARGS
 template <detail_exported::fixed_string Str> constexpr auto operator""_a() {

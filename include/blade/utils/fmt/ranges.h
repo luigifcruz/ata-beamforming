@@ -8,9 +8,10 @@
 #ifndef BL_FMT_RANGES_H_
 #define BL_FMT_RANGES_H_
 
-#ifndef BL_FMT_IMPORT_STD
+#ifndef BL_FMT_MODULE
 #  include <initializer_list>
 #  include <iterator>
+#  include <string>
 #  include <tuple>
 #  include <type_traits>
 #  include <utility>
@@ -489,7 +490,7 @@ struct range_formatter<
     auto out = ctx.out();
     auto it = detail::range_begin(range);
     auto end = detail::range_end(range);
-    if (is_debug) return write_debug_string(out, it, end);
+    if (is_debug) return write_debug_string(out, std::move(it), end);
 
     out = detail::copy<Char>(opening_bracket_, out);
     int i = 0;
@@ -516,9 +517,11 @@ template <typename R, typename Char>
 struct formatter<
     R, Char,
     enable_if_t<conjunction<
-        bool_constant<range_format_kind<R, Char>::value !=
-                          range_format::disabled &&
-                      range_format_kind<R, Char>::value != range_format::map>
+        bool_constant<
+            range_format_kind<R, Char>::value != range_format::disabled &&
+            range_format_kind<R, Char>::value != range_format::map &&
+            range_format_kind<R, Char>::value != range_format::string &&
+            range_format_kind<R, Char>::value != range_format::debug_string>
 // Workaround a bug in MSVC 2015 and earlier.
 #if !BL_FMT_MSC_VERSION || BL_FMT_MSC_VERSION >= 1910
         ,
@@ -530,6 +533,8 @@ struct formatter<
   range_formatter<detail::uncvref_type<range_type>, Char> range_formatter_;
 
  public:
+  using nonlocking = void;
+
   BL_FMT_CONSTEXPR formatter() {
     if (detail::const_check(range_format_kind<R, Char>::value !=
                             range_format::set))
@@ -603,6 +608,46 @@ struct formatter<
     }
     basic_string_view<Char> close = detail::string_literal<Char, '}'>{};
     if (!no_delimiters_) out = detail::copy<Char>(close, out);
+    return out;
+  }
+};
+
+// A (debug_)string formatter.
+template <typename R, typename Char>
+struct formatter<
+    R, Char,
+    enable_if_t<range_format_kind<R, Char>::value == range_format::string ||
+                range_format_kind<R, Char>::value ==
+                    range_format::debug_string>> {
+ private:
+  using range_type = detail::maybe_const_range<R>;
+  using string_type =
+      conditional_t<std::is_constructible<
+                        detail::std_string_view<Char>,
+                        decltype(detail::range_begin(std::declval<R>())),
+                        decltype(detail::range_end(std::declval<R>()))>::value,
+                    detail::std_string_view<Char>, std::basic_string<Char>>;
+
+  formatter<string_type, Char> underlying_;
+
+ public:
+  template <typename ParseContext>
+  BL_FMT_CONSTEXPR auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
+    return underlying_.parse(ctx);
+  }
+
+  template <typename FormatContext>
+  auto format(range_type& range, FormatContext& ctx) const
+      -> decltype(ctx.out()) {
+    auto out = ctx.out();
+    if (detail::const_check(range_format_kind<R, Char>::value ==
+                            range_format::debug_string))
+      *out++ = '"';
+    out = underlying_.format(
+        string_type{detail::range_begin(range), detail::range_end(range)}, ctx);
+    if (detail::const_check(range_format_kind<R, Char>::value ==
+                            range_format::debug_string))
+      *out++ = '"';
     return out;
   }
 };

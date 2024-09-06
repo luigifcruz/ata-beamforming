@@ -8,7 +8,7 @@
 #ifndef BL_FMT_ARGS_H_
 #define BL_FMT_ARGS_H_
 
-#ifndef BL_FMT_IMPORT_STD
+#ifndef BL_FMT_MODULE
 #  include <functional>  // std::reference_wrapper
 #  include <memory>      // std::unique_ptr
 #  include <vector>

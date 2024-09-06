@@ -8,7 +8,7 @@
 #ifndef BL_FMT_OSTREAM_H_
 #define BL_FMT_OSTREAM_H_
 
-#ifndef BL_FMT_IMPORT_STD
+#ifndef BL_FMT_MODULE
 #  include <fstream>  // std::filebuf
 #endif
 

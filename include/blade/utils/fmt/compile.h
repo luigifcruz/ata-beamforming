@@ -8,13 +8,17 @@
 #ifndef BL_FMT_COMPILE_H_
 #define BL_FMT_COMPILE_H_
 
-#ifndef BL_FMT_IMPORT_STD
+#ifndef BL_FMT_MODULE
 #  include <iterator>  // std::back_inserter
 #endif
 
 #include "format.h"
 
 BL_FMT_BEGIN_NAMESPACE
+
+// A compile-time string which is compiled into fast formatting code.
+BL_FMT_EXPORT class compiled_string {};
+
 namespace detail {
 
 template <typename T, typename InputIt>
@@ -22,9 +26,6 @@ BL_FMT_CONSTEXPR inline auto copy(InputIt begin, InputIt end, counting_iterator 
     -> counting_iterator {
   return it + (end - begin);
 }
-
-// A compile-time string which is compiled into fast formatting code.
-class compiled_string {};
 
 template <typename S>
 struct is_compiled_string : std::is_base_of<compiled_string, S> {};
@@ -41,8 +42,7 @@ struct is_compiled_string : std::is_base_of<compiled_string, S> {};
  *     std::string s = bl::fmt::format(BL_FMT_COMPILE("{}"), 42);
  */
 #if defined(__cpp_if_constexpr) && defined(__cpp_return_type_deduction)
-#  define BL_FMT_COMPILE(s) \
-    BL_FMT_STRING_IMPL(s, bl::fmt::detail::compiled_string, explicit)
+#  define BL_FMT_COMPILE(s) BL_FMT_STRING_IMPL(s, bl::fmt::compiled_string, explicit)
 #else
 #  define BL_FMT_COMPILE(s) BL_FMT_STRING(s)
 #endif
