@@ -5,10 +5,10 @@
 //
 // For the license information refer to format.h.
 
-#ifndef FMT_ARGS_H_
-#define FMT_ARGS_H_
+#ifndef BL_FMT_ARGS_H_
+#define BL_FMT_ARGS_H_
 
-#ifndef FMT_IMPORT_STD
+#ifndef BL_FMT_IMPORT_STD
 #  include <functional>  // std::reference_wrapper
 #  include <memory>      // std::unique_ptr
 #  include <vector>
@@ -16,7 +16,7 @@
 
 #include "format.h"  // std_string_view
 
-FMT_BEGIN_NAMESPACE
+BL_FMT_BEGIN_NAMESPACE
 
 namespace detail {
 
@@ -46,10 +46,10 @@ class dynamic_arg_list {
     T value;
 
     template <typename Arg>
-    FMT_CONSTEXPR typed_node(const Arg& arg) : value(arg) {}
+    BL_FMT_CONSTEXPR typed_node(const Arg& arg) : value(arg) {}
 
     template <typename Char>
-    FMT_CONSTEXPR typed_node(const basic_string_view<Char>& arg)
+    BL_FMT_CONSTEXPR typed_node(const basic_string_view<Char>& arg)
         : value(arg.data(), arg.size()) {}
   };
 
@@ -69,12 +69,12 @@ class dynamic_arg_list {
 /**
  * A dynamic list of formatting arguments with storage.
  *
- * It can be implicitly converted into `fmt::basic_format_args` for passing
- * into type-erased formatting functions such as `fmt::vformat`.
+ * It can be implicitly converted into `bl::fmt::basic_format_args` for passing
+ * into type-erased formatting functions such as `bl::fmt::vformat`.
  */
 template <typename Context>
 class dynamic_format_arg_store
-#if FMT_GCC_VERSION && FMT_GCC_VERSION < 409
+#if BL_FMT_GCC_VERSION && BL_FMT_GCC_VERSION < 409
     // Workaround a GCC template argument substitution bug.
     : public basic_format_args<Context>
 #endif
@@ -156,11 +156,11 @@ class dynamic_format_arg_store
    *
    * **Example**:
    *
-   *     fmt::dynamic_format_arg_store<fmt::format_context> store;
+   *     bl::fmt::dynamic_format_arg_store<bl::fmt::format_context> store;
    *     store.push_back(42);
    *     store.push_back("abc");
    *     store.push_back(1.5f);
-   *     std::string result = fmt::vformat("{} and {} and {}", store);
+   *     std::string result = bl::fmt::vformat("{} and {} and {}", store);
    */
   template <typename T> void push_back(const T& arg) {
     if (detail::const_check(need_copy<T>::value))
@@ -175,11 +175,11 @@ class dynamic_format_arg_store
    *
    * **Example**:
    *
-   *     fmt::dynamic_format_arg_store<fmt::format_context> store;
+   *     bl::fmt::dynamic_format_arg_store<bl::fmt::format_context> store;
    *     char band[] = "Rolling Stones";
    *     store.push_back(std::cref(band));
    *     band[9] = 'c'; // Changing str affects the output.
-   *     std::string result = fmt::vformat("{}", store);
+   *     std::string result = bl::fmt::vformat("{}", store);
    *     // result == "Rolling Scones"
    */
   template <typename T> void push_back(std::reference_wrapper<T> arg) {
@@ -200,9 +200,9 @@ class dynamic_format_arg_store
         dynamic_args_.push<std::basic_string<char_type>>(arg.name).c_str();
     if (detail::const_check(need_copy<T>::value)) {
       emplace_arg(
-          fmt::arg(arg_name, dynamic_args_.push<stored_type<T>>(arg.value)));
+          bl::fmt::arg(arg_name, dynamic_args_.push<stored_type<T>>(arg.value)));
     } else {
-      emplace_arg(fmt::arg(arg_name, arg.value));
+      emplace_arg(bl::fmt::arg(arg_name, arg.value));
     }
   }
 
@@ -216,13 +216,13 @@ class dynamic_format_arg_store
   /// Reserves space to store at least `new_cap` arguments including
   /// `new_cap_named` named arguments.
   void reserve(size_t new_cap, size_t new_cap_named) {
-    FMT_ASSERT(new_cap >= new_cap_named,
+    BL_FMT_ASSERT(new_cap >= new_cap_named,
                "Set of arguments includes set of named arguments");
     data_.reserve(new_cap);
     named_info_.reserve(new_cap_named);
   }
 };
 
-FMT_END_NAMESPACE
+BL_FMT_END_NAMESPACE
 
-#endif  // FMT_ARGS_H_
+#endif  // BL_FMT_ARGS_H_

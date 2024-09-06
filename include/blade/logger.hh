@@ -8,69 +8,11 @@
 #ifndef BL_FMT_INCLUDED
 #define BL_FMT_INCLUDED
 
-//
-// Create a namespace alias for fmt.
-// This is done to avoid conflicts with other libraries that use fmt.
-// I really don't like this, but it's the least janky way I could think.
-// TODO: Replace this with <format> when it is generally available.
-//
-
-#ifdef FMT_BEGIN_NAMESPACE
-#undef FMT_BEGIN_NAMESPACE
-#undef FMT_END_NAMESPACE
-#endif
-
-#ifdef FMT_USE_INT128
-#undef FMT_USE_INT128
-#endif
-#define FMT_USE_INT128 0
-
-#define FMT_BEGIN_NAMESPACE \
-    namespace bl {         \
-    namespace fmt {         \
-    inline namespace v10 {
-#define FMT_END_NAMESPACE   \
-    }                       \
-    }                       \
-    }
-
-#undef FMT_ARGS_H_
-#undef FMT_CHRONO_H_
-#undef FMT_COLOR_H_
-#undef FMT_COMPILE_H_
-#undef FMT_CORE_H_
-#undef FMT_FORMAT_INL_H_
-#undef FMT_FORMAT_H_
-#undef FMT_OS_H_
-#undef FMT_OSTREAM_H_
-#undef FMT_PRINTF_H_
-#undef FMT_RANGES_H_
-#undef FMT_STD_H_
-#undef FMT_XCHAR_H_
-
-#define FMT_HEADER_ONLY
+#define BL_FMT_HEADER_ONLY
 #include "blade/utils/fmt/format.h"
 #include "blade/utils/fmt/color.h"
 #include "blade/utils/fmt/ostream.h"
 #include "blade/utils/fmt/ranges.h"
-
-
-#undef FMT_BEGIN_NAMESPACE
-#undef FMT_END_NAMESPACE
-
-#undef FMT_ARGS_H_
-#undef FMT_CHRONO_H_
-#undef FMT_COLOR_H_
-#undef FMT_COMPILE_H_
-#undef FMT_CORE_H_
-#undef FMT_FORMAT_INL_H_
-#undef FMT_FORMAT_H_
-#undef FMT_OS_H_
-#undef FMT_OSTREAM_H_
-#undef FMT_PRINTF_H_
-#undef FMT_RANGES_H_
-#undef FMT_STD_H_
-#undef FMT_XCHAR_H_
 
 #endif  // BL_FMT_INCLUDED
 

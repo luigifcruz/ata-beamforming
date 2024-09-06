@@ -5,10 +5,10 @@
 //
 // For the license information refer to format.h.
 
-#ifndef FMT_STD_H_
-#define FMT_STD_H_
+#ifndef BL_FMT_STD_H_
+#define BL_FMT_STD_H_
 
-#ifndef FMT_IMPORT_STD
+#ifndef BL_FMT_IMPORT_STD
 #  include <atomic>
 #  include <bitset>
 #  include <complex>
@@ -25,62 +25,62 @@
 #include "format.h"
 #include "ostream.h"
 
-#if FMT_HAS_INCLUDE(<version>)
+#if BL_FMT_HAS_INCLUDE(<version>)
 #  include <version>
 #endif
 
-#ifndef FMT_IMPORT_STD
-// Checking FMT_CPLUSPLUS for warning suppression in MSVC.
-#  if FMT_CPLUSPLUS >= 201703L
-#    if FMT_HAS_INCLUDE(<filesystem>)
+#ifndef BL_FMT_IMPORT_STD
+// Checking BL_FMT_CPLUSPLUS for warning suppression in MSVC.
+#  if BL_FMT_CPLUSPLUS >= 201703L
+#    if BL_FMT_HAS_INCLUDE(<filesystem>)
 #      include <filesystem>
 #    endif
-#    if FMT_HAS_INCLUDE(<variant>)
+#    if BL_FMT_HAS_INCLUDE(<variant>)
 #      include <variant>
 #    endif
-#    if FMT_HAS_INCLUDE(<optional>)
+#    if BL_FMT_HAS_INCLUDE(<optional>)
 #      include <optional>
 #    endif
 #  endif
 
-#  if FMT_HAS_INCLUDE(<expected>) && FMT_CPLUSPLUS > 202002L
+#  if BL_FMT_HAS_INCLUDE(<expected>) && BL_FMT_CPLUSPLUS > 202002L
 #    include <expected>
 #  endif
 
-#  if FMT_CPLUSPLUS > 201703L && FMT_HAS_INCLUDE(<source_location>)
+#  if BL_FMT_CPLUSPLUS > 201703L && BL_FMT_HAS_INCLUDE(<source_location>)
 #    include <source_location>
 #  endif
 #endif
 
-// GCC 4 does not support FMT_HAS_INCLUDE.
-#if FMT_HAS_INCLUDE(<cxxabi.h>) || defined(__GLIBCXX__)
+// GCC 4 does not support BL_FMT_HAS_INCLUDE.
+#if BL_FMT_HAS_INCLUDE(<cxxabi.h>) || defined(__GLIBCXX__)
 #  include <cxxabi.h>
 // Android NDK with gabi++ library on some architectures does not implement
 // abi::__cxa_demangle().
 #  ifndef __GABIXX_CXXABI_H__
-#    define FMT_HAS_ABI_CXA_DEMANGLE
+#    define BL_FMT_HAS_ABI_CXA_DEMANGLE
 #  endif
 #endif
 
 // For older Xcode versions, __cpp_lib_xxx flags are inaccurately defined.
-#ifndef FMT_CPP_LIB_FILESYSTEM
+#ifndef BL_FMT_CPP_LIB_FILESYSTEM
 #  ifdef __cpp_lib_filesystem
-#    define FMT_CPP_LIB_FILESYSTEM __cpp_lib_filesystem
+#    define BL_FMT_CPP_LIB_FILESYSTEM __cpp_lib_filesystem
 #  else
-#    define FMT_CPP_LIB_FILESYSTEM 0
+#    define BL_FMT_CPP_LIB_FILESYSTEM 0
 #  endif
 #endif
 
-#ifndef FMT_CPP_LIB_VARIANT
+#ifndef BL_FMT_CPP_LIB_VARIANT
 #  ifdef __cpp_lib_variant
-#    define FMT_CPP_LIB_VARIANT __cpp_lib_variant
+#    define BL_FMT_CPP_LIB_VARIANT __cpp_lib_variant
 #  else
-#    define FMT_CPP_LIB_VARIANT 0
+#    define BL_FMT_CPP_LIB_VARIANT 0
 #  endif
 #endif
 
-#if FMT_CPP_LIB_FILESYSTEM
-FMT_BEGIN_NAMESPACE
+#if BL_FMT_CPP_LIB_FILESYSTEM
+BL_FMT_BEGIN_NAMESPACE
 
 namespace detail {
 
@@ -102,7 +102,7 @@ void write_escaped_path(basic_memory_buffer<Char>& quoted,
     auto buf = basic_memory_buffer<wchar_t>();
     write_escaped_string<wchar_t>(std::back_inserter(buf), native);
     bool valid = to_utf8<wchar_t>::convert(quoted, {buf.data(), buf.size()});
-    FMT_ASSERT(valid, "invalid utf16");
+    BL_FMT_ASSERT(valid, "invalid utf16");
   } else if constexpr (std::is_same_v<Char, PathChar>) {
     write_escaped_string<std::filesystem::path::value_type>(
         std::back_inserter(quoted), native);
@@ -113,7 +113,7 @@ void write_escaped_path(basic_memory_buffer<Char>& quoted,
 
 }  // namespace detail
 
-FMT_EXPORT
+BL_FMT_EXPORT
 template <typename Char> struct formatter<std::filesystem::path, Char> {
  private:
   format_specs specs_;
@@ -122,9 +122,9 @@ template <typename Char> struct formatter<std::filesystem::path, Char> {
   char path_type_ = 0;
 
  public:
-  FMT_CONSTEXPR void set_debug_format(bool set = true) { debug_ = set; }
+  BL_FMT_CONSTEXPR void set_debug_format(bool set = true) { debug_ = set; }
 
-  template <typename ParseContext> FMT_CONSTEXPR auto parse(ParseContext& ctx) {
+  template <typename ParseContext> BL_FMT_CONSTEXPR auto parse(ParseContext& ctx) {
     auto it = ctx.begin(), end = ctx.end();
     if (it == end) return it;
 
@@ -160,11 +160,11 @@ template <typename Char> struct formatter<std::filesystem::path, Char> {
                          specs);
   }
 };
-FMT_END_NAMESPACE
-#endif  // FMT_CPP_LIB_FILESYSTEM
+BL_FMT_END_NAMESPACE
+#endif  // BL_FMT_CPP_LIB_FILESYSTEM
 
-FMT_BEGIN_NAMESPACE
-FMT_EXPORT
+BL_FMT_BEGIN_NAMESPACE
+BL_FMT_EXPORT
 template <std::size_t N, typename Char>
 struct formatter<std::bitset<N>, Char> : nested_formatter<string_view> {
  private:
@@ -173,7 +173,7 @@ struct formatter<std::bitset<N>, Char> : nested_formatter<string_view> {
     const std::bitset<N>& bs;
 
     template <typename OutputIt>
-    FMT_CONSTEXPR auto operator()(OutputIt out) -> OutputIt {
+    BL_FMT_CONSTEXPR auto operator()(OutputIt out) -> OutputIt {
       for (auto pos = N; pos > 0; --pos) {
         out = detail::write<Char>(out, bs[pos - 1] ? Char('1') : Char('0'));
       }
@@ -190,14 +190,14 @@ struct formatter<std::bitset<N>, Char> : nested_formatter<string_view> {
   }
 };
 
-FMT_EXPORT
+BL_FMT_EXPORT
 template <typename Char>
 struct formatter<std::thread::id, Char> : basic_ostream_formatter<Char> {};
-FMT_END_NAMESPACE
+BL_FMT_END_NAMESPACE
 
 #ifdef __cpp_lib_optional
-FMT_BEGIN_NAMESPACE
-FMT_EXPORT
+BL_FMT_BEGIN_NAMESPACE
+BL_FMT_EXPORT
 template <typename T, typename Char>
 struct formatter<std::optional<T>, Char,
                  std::enable_if_t<is_formattable<T, Char>::value>> {
@@ -210,16 +210,16 @@ struct formatter<std::optional<T>, Char,
       detail::string_literal<Char, 'n', 'o', 'n', 'e'>{};
 
   template <class U>
-  FMT_CONSTEXPR static auto maybe_set_debug_format(U& u, bool set)
+  BL_FMT_CONSTEXPR static auto maybe_set_debug_format(U& u, bool set)
       -> decltype(u.set_debug_format(set)) {
     u.set_debug_format(set);
   }
 
   template <class U>
-  FMT_CONSTEXPR static void maybe_set_debug_format(U&, ...) {}
+  BL_FMT_CONSTEXPR static void maybe_set_debug_format(U&, ...) {}
 
  public:
-  template <typename ParseContext> FMT_CONSTEXPR auto parse(ParseContext& ctx) {
+  template <typename ParseContext> BL_FMT_CONSTEXPR auto parse(ParseContext& ctx) {
     maybe_set_debug_format(underlying_, true);
     return underlying_.parse(ctx);
   }
@@ -236,12 +236,12 @@ struct formatter<std::optional<T>, Char,
     return detail::write(out, ')');
   }
 };
-FMT_END_NAMESPACE
+BL_FMT_END_NAMESPACE
 #endif  // __cpp_lib_optional
 
-#if defined(__cpp_lib_expected) || FMT_CPP_LIB_VARIANT
+#if defined(__cpp_lib_expected) || BL_FMT_CPP_LIB_VARIANT
 
-FMT_BEGIN_NAMESPACE
+BL_FMT_BEGIN_NAMESPACE
 namespace detail {
 
 template <typename Char, typename OutputIt, typename T>
@@ -254,19 +254,19 @@ auto write_escaped_alternative(OutputIt out, const T& v) -> OutputIt {
 
 }  // namespace detail
 
-FMT_END_NAMESPACE
+BL_FMT_END_NAMESPACE
 #endif
 
 #ifdef __cpp_lib_expected
-FMT_BEGIN_NAMESPACE
+BL_FMT_BEGIN_NAMESPACE
 
-FMT_EXPORT
+BL_FMT_EXPORT
 template <typename T, typename E, typename Char>
 struct formatter<std::expected<T, E>, Char,
                  std::enable_if_t<is_formattable<T, Char>::value &&
                                   is_formattable<E, Char>::value>> {
   template <typename ParseContext>
-  FMT_CONSTEXPR auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
+  BL_FMT_CONSTEXPR auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
     return ctx.begin();
   }
 
@@ -286,14 +286,14 @@ struct formatter<std::expected<T, E>, Char,
     return out;
   }
 };
-FMT_END_NAMESPACE
+BL_FMT_END_NAMESPACE
 #endif  // __cpp_lib_expected
 
 #ifdef __cpp_lib_source_location
-FMT_BEGIN_NAMESPACE
-FMT_EXPORT
+BL_FMT_BEGIN_NAMESPACE
+BL_FMT_EXPORT
 template <> struct formatter<std::source_location> {
-  template <typename ParseContext> FMT_CONSTEXPR auto parse(ParseContext& ctx) {
+  template <typename ParseContext> BL_FMT_CONSTEXPR auto parse(ParseContext& ctx) {
     return ctx.begin();
   }
 
@@ -311,11 +311,11 @@ template <> struct formatter<std::source_location> {
     return out;
   }
 };
-FMT_END_NAMESPACE
+BL_FMT_END_NAMESPACE
 #endif
 
-#if FMT_CPP_LIB_VARIANT
-FMT_BEGIN_NAMESPACE
+#if BL_FMT_CPP_LIB_VARIANT
+BL_FMT_BEGIN_NAMESPACE
 namespace detail {
 
 template <typename T>
@@ -349,10 +349,10 @@ template <typename T, typename C> struct is_variant_formattable {
       detail::is_variant_formattable_<T, C>::value;
 };
 
-FMT_EXPORT
+BL_FMT_EXPORT
 template <typename Char> struct formatter<std::monostate, Char> {
   template <typename ParseContext>
-  FMT_CONSTEXPR auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
+  BL_FMT_CONSTEXPR auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
     return ctx.begin();
   }
 
@@ -363,14 +363,14 @@ template <typename Char> struct formatter<std::monostate, Char> {
   }
 };
 
-FMT_EXPORT
+BL_FMT_EXPORT
 template <typename Variant, typename Char>
 struct formatter<
     Variant, Char,
     std::enable_if_t<std::conjunction_v<
         is_variant_like<Variant>, is_variant_formattable<Variant, Char>>>> {
   template <typename ParseContext>
-  FMT_CONSTEXPR auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
+  BL_FMT_CONSTEXPR auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
     return ctx.begin();
   }
 
@@ -380,33 +380,33 @@ struct formatter<
     auto out = ctx.out();
 
     out = detail::write<Char>(out, "variant(");
-    FMT_TRY {
+    BL_FMT_TRY {
       std::visit(
           [&](const auto& v) {
             out = detail::write_escaped_alternative<Char>(out, v);
           },
           value);
     }
-    FMT_CATCH(const std::bad_variant_access&) {
+    BL_FMT_CATCH(const std::bad_variant_access&) {
       detail::write<Char>(out, "valueless by exception");
     }
     *out++ = ')';
     return out;
   }
 };
-FMT_END_NAMESPACE
-#endif  // FMT_CPP_LIB_VARIANT
+BL_FMT_END_NAMESPACE
+#endif  // BL_FMT_CPP_LIB_VARIANT
 
-FMT_BEGIN_NAMESPACE
-FMT_EXPORT
+BL_FMT_BEGIN_NAMESPACE
+BL_FMT_EXPORT
 template <typename Char> struct formatter<std::error_code, Char> {
   template <typename ParseContext>
-  FMT_CONSTEXPR auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
+  BL_FMT_CONSTEXPR auto parse(ParseContext& ctx) -> decltype(ctx.begin()) {
     return ctx.begin();
   }
 
   template <typename FormatContext>
-  FMT_CONSTEXPR auto format(const std::error_code& ec, FormatContext& ctx) const
+  BL_FMT_CONSTEXPR auto format(const std::error_code& ec, FormatContext& ctx) const
       -> decltype(ctx.out()) {
     auto out = ctx.out();
     out = detail::write_bytes<Char>(out, ec.category().name(), format_specs());
@@ -416,12 +416,12 @@ template <typename Char> struct formatter<std::error_code, Char> {
   }
 };
 
-#if FMT_USE_RTTI
+#if BL_FMT_USE_RTTI
 namespace detail {
 
 template <typename Char, typename OutputIt>
 auto write_demangled_name(OutputIt out, const std::type_info& ti) -> OutputIt {
-#  ifdef FMT_HAS_ABI_CXA_DEMANGLE
+#  ifdef BL_FMT_HAS_ABI_CXA_DEMANGLE
   int status = 0;
   std::size_t size = 0;
   std::unique_ptr<char, void (*)(void*)> demangled_name_ptr(
@@ -460,7 +460,7 @@ auto write_demangled_name(OutputIt out, const std::type_info& ti) -> OutputIt {
     demangled_name_view = string_view(ti.name());
   }
   return detail::write_bytes<Char>(out, demangled_name_view);
-#  elif FMT_MSC_VERSION
+#  elif BL_FMT_MSC_VERSION
   const string_view demangled_name(ti.name());
   for (std::size_t i = 0; i < demangled_name.size(); ++i) {
     auto sub = demangled_name;
@@ -487,12 +487,12 @@ auto write_demangled_name(OutputIt out, const std::type_info& ti) -> OutputIt {
 
 }  // namespace detail
 
-FMT_EXPORT
+BL_FMT_EXPORT
 template <typename Char>
 struct formatter<std::type_info, Char  // DEPRECATED! Mixing code unit types.
                  > {
  public:
-  FMT_CONSTEXPR auto parse(basic_format_parse_context<Char>& ctx)
+  BL_FMT_CONSTEXPR auto parse(basic_format_parse_context<Char>& ctx)
       -> decltype(ctx.begin()) {
     return ctx.begin();
   }
@@ -505,7 +505,7 @@ struct formatter<std::type_info, Char  // DEPRECATED! Mixing code unit types.
 };
 #endif
 
-FMT_EXPORT
+BL_FMT_EXPORT
 template <typename T, typename Char>
 struct formatter<
     T, Char,  // DEPRECATED! Mixing code unit types.
@@ -514,14 +514,14 @@ struct formatter<
   bool with_typename_ = false;
 
  public:
-  FMT_CONSTEXPR auto parse(basic_format_parse_context<Char>& ctx)
+  BL_FMT_CONSTEXPR auto parse(basic_format_parse_context<Char>& ctx)
       -> decltype(ctx.begin()) {
     auto it = ctx.begin();
     auto end = ctx.end();
     if (it == end || *it == '}') return it;
     if (*it == 't') {
       ++it;
-      with_typename_ = FMT_USE_RTTI != 0;
+      with_typename_ = BL_FMT_USE_RTTI != 0;
     }
     return it;
   }
@@ -530,7 +530,7 @@ struct formatter<
   auto format(const std::exception& ex, Context& ctx) const
       -> decltype(ctx.out()) {
     auto out = ctx.out();
-#if FMT_USE_RTTI
+#if BL_FMT_USE_RTTI
     if (with_typename_) {
       out = detail::write_demangled_name<Char>(out, typeid(ex));
       *out++ = ':';
@@ -572,13 +572,13 @@ struct is_bit_reference_like<std::__bit_const_reference<C>> {
 // We can't use std::vector<bool, Allocator>::reference and
 // std::bitset<N>::reference because the compiler can't deduce Allocator and N
 // in partial specialization.
-FMT_EXPORT
+BL_FMT_EXPORT
 template <typename BitRef, typename Char>
 struct formatter<BitRef, Char,
                  enable_if_t<detail::is_bit_reference_like<BitRef>::value>>
     : formatter<bool, Char> {
   template <typename FormatContext>
-  FMT_CONSTEXPR auto format(const BitRef& v, FormatContext& ctx) const
+  BL_FMT_CONSTEXPR auto format(const BitRef& v, FormatContext& ctx) const
       -> decltype(ctx.out()) {
     return formatter<bool, Char>::format(v, ctx);
   }
@@ -592,7 +592,7 @@ template <typename T> auto ptr(const std::shared_ptr<T>& p) -> const void* {
   return p.get();
 }
 
-FMT_EXPORT
+BL_FMT_EXPORT
 template <typename T, typename Char>
 struct formatter<std::atomic<T>, Char,
                  enable_if_t<is_formattable<T, Char>::value>>
@@ -605,7 +605,7 @@ struct formatter<std::atomic<T>, Char,
 };
 
 #ifdef __cpp_lib_atomic_flag_test
-FMT_EXPORT
+BL_FMT_EXPORT
 template <typename Char>
 struct formatter<std::atomic_flag, Char> : formatter<bool, Char> {
   template <typename FormatContext>
@@ -616,7 +616,7 @@ struct formatter<std::atomic_flag, Char> : formatter<bool, Char> {
 };
 #endif  // __cpp_lib_atomic_flag_test
 
-FMT_EXPORT
+BL_FMT_EXPORT
 template <typename F, typename Char>
 struct formatter<std::complex<F>, Char> : nested_formatter<F, Char> {
  private:
@@ -626,15 +626,15 @@ struct formatter<std::complex<F>, Char> : nested_formatter<F, Char> {
     const std::complex<F>& c;
 
     template <typename OutputIt>
-    FMT_CONSTEXPR auto operator()(OutputIt out) -> OutputIt {
+    BL_FMT_CONSTEXPR auto operator()(OutputIt out) -> OutputIt {
       if (c.real() != 0) {
         auto format_full = detail::string_literal<Char, '(', '{', '}', '+', '{',
                                                   '}', 'i', ')'>{};
-        return fmt::format_to(out, basic_string_view<Char>(format_full),
+        return bl::fmt::format_to(out, basic_string_view<Char>(format_full),
                               f->nested(c.real()), f->nested(c.imag()));
       }
       auto format_imag = detail::string_literal<Char, '{', '}', 'i'>{};
-      return fmt::format_to(out, basic_string_view<Char>(format_imag),
+      return bl::fmt::format_to(out, basic_string_view<Char>(format_imag),
                             f->nested(c.imag()));
     }
   };
@@ -647,5 +647,5 @@ struct formatter<std::complex<F>, Char> : nested_formatter<F, Char> {
   }
 };
 
-FMT_END_NAMESPACE
-#endif  // FMT_STD_H_
+BL_FMT_END_NAMESPACE
+#endif  // BL_FMT_STD_H_

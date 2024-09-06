@@ -5,10 +5,10 @@
 //
 // For the license information refer to format.h.
 
-#ifndef FMT_OSTREAM_H_
-#define FMT_OSTREAM_H_
+#ifndef BL_FMT_OSTREAM_H_
+#define BL_FMT_OSTREAM_H_
 
-#ifndef FMT_IMPORT_STD
+#ifndef BL_FMT_IMPORT_STD
 #  include <fstream>  // std::filebuf
 #endif
 
@@ -22,7 +22,7 @@
 
 #include "chrono.h"  // formatbuf
 
-FMT_BEGIN_NAMESPACE
+BL_FMT_BEGIN_NAMESPACE
 namespace detail {
 
 // Generate a unique explicit instantion in every translation unit using a tag
@@ -35,21 +35,21 @@ class file_access {
   friend auto get_file(BufType& obj) -> FILE* { return obj.*FileMemberPtr; }
 };
 
-#if FMT_MSC_VERSION
+#if BL_FMT_MSC_VERSION
 template class file_access<file_access_tag, std::filebuf,
                            &std::filebuf::_Myfile>;
 auto get_file(std::filebuf&) -> FILE*;
 #endif
 
-inline auto write_ostream_unicode(std::ostream& os, fmt::string_view data)
+inline auto write_ostream_unicode(std::ostream& os, bl::fmt::string_view data)
     -> bool {
   FILE* f = nullptr;
-#if FMT_MSC_VERSION && FMT_USE_RTTI
+#if BL_FMT_MSC_VERSION && BL_FMT_USE_RTTI
   if (auto* buf = dynamic_cast<std::filebuf*>(os.rdbuf()))
     f = get_file(*buf);
   else
     return false;
-#elif defined(_WIN32) && defined(__GLIBCXX__) && FMT_USE_RTTI
+#elif defined(_WIN32) && defined(__GLIBCXX__) && BL_FMT_USE_RTTI
   auto* rdbuf = os.rdbuf();
   if (auto* sfbuf = dynamic_cast<__gnu_cxx::stdio_sync_filebuf<char>*>(rdbuf))
     f = sfbuf->file();
@@ -72,7 +72,7 @@ inline auto write_ostream_unicode(std::ostream& os, fmt::string_view data)
   return false;
 }
 inline auto write_ostream_unicode(std::wostream&,
-                                  fmt::basic_string_view<wchar_t>) -> bool {
+                                  bl::fmt::basic_string_view<wchar_t>) -> bool {
   return false;
 }
 
@@ -96,7 +96,7 @@ template <typename Char, typename T>
 void format_value(buffer<Char>& buf, const T& value) {
   auto&& format_buf = formatbuf<std::basic_streambuf<Char>>(buf);
   auto&& output = std::basic_ostream<Char>(&format_buf);
-#if !defined(FMT_STATIC_THOUSANDS_SEPARATOR)
+#if !defined(BL_FMT_STATIC_THOUSANDS_SEPARATOR)
   output.imbue(std::locale::classic());  // The default is always unlocalized.
 #endif
   output << value;
@@ -140,8 +140,8 @@ struct formatter<detail::streamed_view<T>, Char>
  *
  * **Example**:
  *
- *     fmt::print("Current thread id: {}\n",
- *                fmt::streamed(std::this_thread::get_id()));
+ *     bl::fmt::print("Current thread id: {}\n",
+ *                bl::fmt::streamed(std::this_thread::get_id()));
  */
 template <typename T>
 constexpr auto streamed(const T& value) -> detail::streamed_view<T> {
@@ -159,7 +159,7 @@ inline void vprint_directly(std::ostream& os, string_view format_str,
 
 }  // namespace detail
 
-FMT_EXPORT template <typename Char>
+BL_FMT_EXPORT template <typename Char>
 void vprint(std::basic_ostream<Char>& os,
             basic_string_view<type_identity_t<Char>> format_str,
             typename detail::vformat_args<Char>::type args) {
@@ -174,38 +174,38 @@ void vprint(std::basic_ostream<Char>& os,
  *
  * **Example**:
  *
- *     fmt::print(cerr, "Don't {}!", "panic");
+ *     bl::fmt::print(cerr, "Don't {}!", "panic");
  */
-FMT_EXPORT template <typename... T>
+BL_FMT_EXPORT template <typename... T>
 void print(std::ostream& os, format_string<T...> fmt, T&&... args) {
-  const auto& vargs = fmt::make_format_args(args...);
+  const auto& vargs = bl::fmt::make_format_args(args...);
   if (detail::use_utf8())
     vprint(os, fmt, vargs);
   else
     detail::vprint_directly(os, fmt, vargs);
 }
 
-FMT_EXPORT
+BL_FMT_EXPORT
 template <typename... Args>
 void print(std::wostream& os,
            basic_format_string<wchar_t, type_identity_t<Args>...> fmt,
            Args&&... args) {
-  vprint(os, fmt, fmt::make_format_args<buffered_context<wchar_t>>(args...));
+  vprint(os, fmt, bl::fmt::make_format_args<buffered_context<wchar_t>>(args...));
 }
 
-FMT_EXPORT template <typename... T>
+BL_FMT_EXPORT template <typename... T>
 void println(std::ostream& os, format_string<T...> fmt, T&&... args) {
-  fmt::print(os, "{}\n", fmt::format(fmt, std::forward<T>(args)...));
+  bl::fmt::print(os, "{}\n", bl::fmt::format(fmt, std::forward<T>(args)...));
 }
 
-FMT_EXPORT
+BL_FMT_EXPORT
 template <typename... Args>
 void println(std::wostream& os,
              basic_format_string<wchar_t, type_identity_t<Args>...> fmt,
              Args&&... args) {
-  print(os, L"{}\n", fmt::format(fmt, std::forward<Args>(args)...));
+  print(os, L"{}\n", bl::fmt::format(fmt, std::forward<Args>(args)...));
 }
 
-FMT_END_NAMESPACE
+BL_FMT_END_NAMESPACE
 
-#endif  // FMT_OSTREAM_H_
+#endif  // BL_FMT_OSTREAM_H_
