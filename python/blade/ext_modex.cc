@@ -25,6 +25,7 @@ void NB_SUBMODULE(auto& m, const auto& in_name, const auto& out_name) {
                       const U64&,
 
                       const U64&,
+                      const U64&,
 
                       const U64&,
                       const U64&,
@@ -36,6 +37,7 @@ void NB_SUBMODULE(auto& m, const auto& in_name, const auto& out_name) {
                                      "pre_correlator_stacker_rate"_a,
 
                                      "correlator_integration_rate"_a,
+                                     "correlator_conjugate_antenna_index"_a,
 
                                      "stacker_block_size"_a = 512,
                                      "caster_block_size"_a = 512,

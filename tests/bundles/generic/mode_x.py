@@ -28,7 +28,8 @@ if __name__ == "__main__":
 
         'pre_correlator_stacker_rate': 2,
 
-        'correlator_integration_rate': 8192
+        'correlator_integration_rate': 8192,
+        'correlator_conjugate_antenna_index': 1
     }
 
     host_input_buffer = bl.array_tensor(in_shape, dtype=bl.cf32, device=bl.cpu)
