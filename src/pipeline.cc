@@ -125,9 +125,10 @@ Result Pipeline::compute(const U64& index) {
         localStepCount = _computeStepCount / localStepOffset % _computeStepRatios[localRatioIndex];
 
         BL_TRACE("[M: '{}', R: {}]: Step Count: {}, Step Offset: {}, Step Ratio: {}",
-                 module->name(), module->getComputeRatio(), localStepCount, localStepOffset, _computeStepRatios[localRatioIndex]);
+                 module->name(), module->getComputeRatio(), localStepCount % module->getComputeRatio(),
+                 localStepOffset, _computeStepRatios[localRatioIndex]);
 
-        const auto& result = module->process(localStepCount, _streams[index]);
+        const auto& result = module->process(localStepCount % module->getComputeRatio(), _streams[index]);
 
         if (result == Result::PIPELINE_EXHAUSTED) {
             BL_INFO("Module finished pipeline execution at {} lifetime compute cycles.", _computeLifetimeCycles);
