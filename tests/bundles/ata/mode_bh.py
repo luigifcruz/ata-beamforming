@@ -26,8 +26,10 @@ class Pipeline:
         self.copy(self.input.date, date)
         self.copy(self.input.buffer, buffer)
 
-    def transfer_out(self, buffer):
+    def transfer_result(self):
         self.copy(self.output.buffer, self.module.mode_h.get_output())
+
+    def transfer_out(self, buffer):
         self.copy(buffer, self.output.buffer)
 
 
@@ -153,6 +155,11 @@ if __name__ == "__main__":
             pipeline.transfer_in(host_input_dut, host_input_date, host_input_buffer)
             return bl.result.success
 
+        # Define the result callback function
+        def result_callback():
+            pipeline.transfer_result()
+            return bl.result.success
+
         # Define the output callback function
         def output_callback():
             dequeue_count[0] += 1
@@ -160,7 +167,7 @@ if __name__ == "__main__":
             return bl.result.success
 
         # Enqueue the pipeline with the input and output callbacks and the current enqueue count
-        pipeline.enqueue(input_callback, output_callback, enqueue_count[0], dequeue_count[0])
+        pipeline.enqueue(input_callback, result_callback, output_callback, enqueue_count[0], dequeue_count[0])
 
         # Define the dequeue callback function
         def callback(input_id, output_id, did_output):

@@ -17,9 +17,12 @@ class Pipeline:
     def transfer_in(self, buf):
         self.copy(self.input.buf, buf)
 
-    # Transfer data from the polarizer's output to the output buffer and then to the provided buffer
-    def transfer_out(self, buf):
+    # Transfer data from the polarizer's output to the output buffer
+    def transfer_result(self):
         self.copy(self.output.buf, self.module.polarizer.get_output())
+
+    # Transfer data from the output buffer to the provided buffer
+    def transfer_out(self, buf):
         self.copy(buf, self.output.buf)
 
 # Define the shape and configuration for the pipeline
@@ -49,6 +52,11 @@ while iterations[0] < 8:
         pipeline.transfer_in(host_input)
         return bl.result.success
 
+    # Define the result callback function
+    def result_callback():
+        pipeline.transfer_result()
+        return bl.result.success
+
     # Define the output callback function
     def output_callback():
         dequeue_count[0] += 1
@@ -56,7 +64,7 @@ while iterations[0] < 8:
         return bl.result.success
 
     # Enqueue the pipeline with the input and output callbacks and the current enqueue count
-    pipeline.enqueue(input_callback, output_callback, enqueue_count[0], dequeue_count[0])
+    pipeline.enqueue(input_callback, result_callback, output_callback, enqueue_count[0], dequeue_count[0])
 
     # Define the dequeue callback function
     def callback(input_id, output_id, did_output):
