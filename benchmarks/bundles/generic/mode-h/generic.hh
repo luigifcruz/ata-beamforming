@@ -8,8 +8,8 @@ using namespace Blade;
 namespace bm = benchmark;
 namespace chr = std::chrono;
 
-static void BM_BundleATAModeH(benchmark::State& state) {
-    const uint64_t count = 256;
+static void BM_BundleGenericModeH(benchmark::State& state) {
+    const uint64_t count = 64;
     std::shared_ptr<Generic::ModeH::BenchmarkRunner<CF32, F32>> bench;
 
     BL_DISABLE_PRINT();
@@ -37,7 +37,7 @@ static void BM_BundleATAModeH(benchmark::State& state) {
     BL_ENABLE_PRINT();
 }
 
-BENCHMARK(BM_BundleATAModeH)
+BENCHMARK(BM_BundleGenericModeH)
     ->Iterations(2)
     ->UseManualTime()
     ->Unit(bm::kMillisecond);

@@ -2,6 +2,7 @@
 #define BLADE_MEMORY_DEVICE_OPS_HH
 
 #include <cstdint>
+#include <type_traits>
 
 #include <cuda_fp16.h>
 
@@ -24,6 +25,10 @@ class alignas(2 * sizeof(T)) complex {
     __host__ __device__ complex(T r) : _real(r), _imag(0) {}
     __host__ __device__ complex(T r, T i) : _real(r), _imag(i) {}
 
+    template <typename U, typename = std::enable_if_t<std::is_same<U, float>::value || std::is_same<U, double>::value>>
+    __host__ __device__ explicit complex(const complex<U>& rhs) : _real(static_cast<T>(rhs.real())), _imag(static_cast<T>(rhs.imag())) {}
+    // TODO: Add support for half to float/double conversion.
+
     __host__ __device__ complex<T> operator+(const complex<T>& rhs) const {
         return complex<T>(_real + rhs._real, _imag + rhs._imag);
     }
@@ -42,6 +47,35 @@ class alignas(2 * sizeof(T)) complex {
         T real = (_real * rhs._real + _imag * rhs._imag) / denom;
         T imag = (_imag * rhs._real - _real * rhs._imag) / denom;
         return complex<T>(real, imag);
+    }
+
+    __host__ __device__ complex<T>& operator+=(const complex<T>& rhs) {
+        _real += rhs._real;
+        _imag += rhs._imag;
+        return *this;
+    }
+
+    __host__ __device__ complex<T>& operator-=(const complex<T>& rhs) {
+        _real -= rhs._real;
+        _imag -= rhs._imag;
+        return *this;
+    }
+
+    __host__ __device__ complex<T>& operator*=(const complex<T>& rhs) {
+        T real = _real * rhs._real - _imag * rhs._imag;
+        T imag = _real * rhs._imag + _imag * rhs._real;
+        _real = real;
+        _imag = imag;
+        return *this;
+    }
+
+    __host__ __device__ complex<T>& operator/=(const complex<T>& rhs) {
+        T denom = rhs._real * rhs._real + rhs._imag * rhs._imag;
+        T real = (_real * rhs._real + _imag * rhs._imag) / denom;
+        T imag = (_imag * rhs._real - _real * rhs._imag) / denom;
+        _real = real;
+        _imag = imag;
+        return *this;
     }
 
     __host__ __device__ bool operator==(const complex<T>& rhs) const {
@@ -82,6 +116,20 @@ class alignas(2 * sizeof(T)) complex {
 
     __host__ __device__ constexpr T imag() const {
         return _imag;
+    }
+
+    __host__ __device__ constexpr complex<T> conj() const {
+        return complex<T>(_real, -_imag);
+    }
+
+    __host__ __device__ void atomic_add(const complex<T>& rhs) {
+        atomicAdd(&_real, rhs._real);
+        atomicAdd(&_imag, rhs._imag);
+    }
+
+    __host__ __device__ void atomic_sub(const complex<T>& rhs) {
+        atomicSub(&_real, rhs._real);
+        atomicSub(&_imag, rhs._imag);
     }
 
  private:

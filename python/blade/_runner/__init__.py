@@ -17,8 +17,8 @@ def runner(cls):
         def copy(self, dst, src):
             assert self.runner.copy(dst, src) == bl.result.success
 
-        def enqueue(self, input_callback, output_callback, input_id, output_id):
-            res = self.runner.enqueue(input_callback, output_callback, input_id, output_id)
+        def enqueue(self, input_callback, result_callback, output_callback, input_id, output_id):
+            res = self.runner.enqueue(input_callback, result_callback, output_callback, input_id, output_id)
 
             if res == bl.result.success or \
                res == bl.result.runner_queue_full or \

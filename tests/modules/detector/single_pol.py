@@ -23,14 +23,14 @@ if __name__ == "__main__":
     number_of_samples = 8750
     number_of_polarizations = 2
 
-    integration_size = 10
+    integration_rate = 10
     output_polarizations = 1
 
     input_shape = (number_of_beams, number_of_channels, number_of_samples, number_of_polarizations)
-    output_shape = (number_of_beams, number_of_channels, number_of_samples // integration_size, output_polarizations)
+    output_shape = (number_of_beams, number_of_channels, number_of_samples // integration_rate, output_polarizations)
 
     config = {
-        'integration_size': integration_size,
+        'integration_rate': integration_rate,
         'number_of_output_polarizations': output_polarizations,
     }
 
@@ -57,9 +57,9 @@ if __name__ == "__main__":
     
     for ibeam in range(number_of_beams):
         for ichan in range(number_of_channels):
-            for isamp in range(number_of_samples//integration_size):
-                x = bl_input[ibeam, ichan, isamp*integration_size:isamp*integration_size+integration_size, 0]
-                y = bl_input[ibeam, ichan, isamp*integration_size:isamp*integration_size+integration_size, 1]
+            for isamp in range(number_of_samples//integration_rate):
+                x = bl_input[ibeam, ichan, isamp*integration_rate:isamp*integration_rate+integration_rate, 0]
+                y = bl_input[ibeam, ichan, isamp*integration_rate:isamp*integration_rate+integration_rate, 1]
 
                 auto_x = x.real * x.real + x.imag * x.imag
                 auto_y = y.real * y.real + y.imag * y.imag

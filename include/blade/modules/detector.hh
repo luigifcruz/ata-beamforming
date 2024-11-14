@@ -15,7 +15,7 @@ class BLADE_API Detector : public Module {
     // Configuration
 
     struct Config {
-        U64 integrationSize;
+        U64 integrationRate;
         U64 numberOfOutputPolarizations = 4;
 
         U64 blockSize = 512;
@@ -48,7 +48,7 @@ class BLADE_API Detector : public Module {
     // Taint Registers
 
     constexpr Taint getTaint() const {
-        return Taint::CONSUMER | 
+        return Taint::CONSUMER |
                Taint::PRODUCER;
     }
 
@@ -62,7 +62,7 @@ class BLADE_API Detector : public Module {
     Result process(const U64& currentStepCount, const Stream& stream = {}) final;
 
  private:
-    // Variables 
+    // Variables
 
     const Config config;
     const Input input;
@@ -74,7 +74,7 @@ class BLADE_API Detector : public Module {
         return ArrayShape({
             getInputBuffer().shape().numberOfAspects(),
             getInputBuffer().shape().numberOfFrequencyChannels(),
-            getInputBuffer().shape().numberOfTimeSamples() / config.integrationSize,
+            getInputBuffer().shape().numberOfTimeSamples() / config.integrationRate,
             config.numberOfOutputPolarizations,
         });
     }
@@ -83,4 +83,3 @@ class BLADE_API Detector : public Module {
 }  // namespace Blade::Modules
 
 #endif
-

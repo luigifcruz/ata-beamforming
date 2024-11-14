@@ -3,8 +3,8 @@
 
 #include "blade_config.hh"
 
-#ifdef BLADE_MODULE_CAST
-#include "blade/modules/cast.hh"
+#ifdef BLADE_MODULE_CASTER
+#include "blade/modules/caster.hh"
 #endif
 
 #ifdef BLADE_MODULE_CHANNELIZER
@@ -13,6 +13,10 @@
 
 #ifdef BLADE_MODULE_DETECTOR
 #include "blade/modules/detector.hh"
+#endif
+
+#ifdef BLADE_MODULE_CORRELATOR
+#include "blade/modules/correlator.hh"
 #endif
 
 #ifdef BLADE_MODULE_POLARIZER
@@ -39,16 +43,20 @@
 #include "blade/modules/phasor/ata.hh"
 #endif
 
-#ifdef BLADE_MODULE_GATHER
-#include "blade/modules/gather.hh"
+#ifdef BLADE_MODULE_STACKER
+#include "blade/modules/stacker.hh"
 #endif
 
-#ifdef BLADE_MODULE_DUPLICATE
-#include "blade/modules/duplicate.hh"
+#ifdef BLADE_MODULE_DUPLICATOR
+#include "blade/modules/duplicator.hh"
 #endif
 
-#ifdef BLADE_MODULE_PERMUTATION
-#include "blade/modules/permutation.hh"
+#ifdef BLADE_MODULE_PERMUTATOR
+#include "blade/modules/permutator.hh"
+#endif
+
+#ifdef BLADE_MODULE_INTEGRATOR
+#include "blade/modules/integrator.hh"
 #endif
 
 #endif

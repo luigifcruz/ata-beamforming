@@ -88,10 +88,10 @@ py.extension_module(
     install_dir: py_install_path,
 )
 
-if cfg_lst.get('BLADE_MODULE_CAST', false)
+if cfg_lst.get('BLADE_MODULE_CASTER', false)
     py.extension_module(
-        '_cast_impl',
-        sources: 'ext_cast.cc',
+        '_caster_impl',
+        sources: 'ext_caster.cc',
         include_directories: inc_lst,
         dependencies: deps + dep_lst,
         link_with: lib_blade,
@@ -124,10 +124,10 @@ if cfg_lst.get('BLADE_MODULE_POLARIZER', false)
     )
 endif
 
-if cfg_lst.get('BLADE_MODULE_PERMUTATION', false)
+if cfg_lst.get('BLADE_MODULE_PERMUTATOR', false)
     py.extension_module(
-        '_permutation_impl',
-        sources: 'ext_permutation.cc',
+        '_permutator_impl',
+        sources: 'ext_permutator.cc',
         include_directories: inc_lst,
         dependencies: deps + dep_lst,
         link_with: lib_blade,
@@ -148,10 +148,22 @@ if cfg_lst.get('BLADE_MODULE_GUPPI', false)
     )
 endif
 
-if cfg_lst.get('BLADE_MODULE_GATHER', false)
+if cfg_lst.get('BLADE_MODULE_STACKER', false)
     py.extension_module(
-        '_gather_impl',
-        sources: 'ext_gather.cc',
+        '_stacker_impl',
+        sources: 'ext_stacker.cc',
+        include_directories: inc_lst,
+        dependencies: deps + dep_lst,
+        link_with: lib_blade,
+        install: true,
+        install_dir: py_install_path,
+    )
+endif
+
+if cfg_lst.get('BLADE_MODULE_INTEGRATOR', false)
+    py.extension_module(
+        '_integrator_impl',
+        sources: 'ext_integrator.cc',
         include_directories: inc_lst,
         dependencies: deps + dep_lst,
         link_with: lib_blade,
@@ -172,10 +184,22 @@ if cfg_lst.get('BLADE_MODULE_DETECTOR', false)
     )
 endif
 
-if cfg_lst.get('BLADE_MODULE_DUPLICATE', false)
+if cfg_lst.get('BLADE_MODULE_CORRELATOR', false)
     py.extension_module(
-        '_duplicate_impl',
-        sources: 'ext_duplicate.cc',
+        '_correlator_impl',
+        sources: 'ext_correlator.cc',
+        include_directories: inc_lst,
+        dependencies: deps + dep_lst,
+        link_with: lib_blade,
+        install: true,
+        install_dir: py_install_path,
+    )
+endif
+
+if cfg_lst.get('BLADE_MODULE_DUPLICATOR', false)
+    py.extension_module(
+        '_duplicator_impl',
+        sources: 'ext_duplicator.cc',
         include_directories: inc_lst,
         dependencies: deps + dep_lst,
         link_with: lib_blade,
@@ -238,6 +262,18 @@ if (cfg_lst.get('BLADE_BUNDLE_GENERIC_MODE_H', false))
     py.extension_module(
         '_modeh_impl',
         sources: 'ext_modeh.cc',
+        include_directories: inc_lst,
+        dependencies: deps + dep_lst,
+        link_with: lib_blade,
+        install: true,
+        install_dir: py_install_path,
+    )
+endif
+
+if (cfg_lst.get('BLADE_BUNDLE_GENERIC_MODE_X', false))
+    py.extension_module(
+        '_modex_impl',
+        sources: 'ext_modex.cc',
         include_directories: inc_lst,
         dependencies: deps + dep_lst,
         link_with: lib_blade,

@@ -15,4 +15,9 @@
 #include "./generic/mode-h/generic.hh"
 #endif
 
+#if defined(BLADE_BUNDLE_GENERIC_MODE_X)
+#include "./generic/mode-x/generic.hh"
+#endif
+
+
 BENCHMARK_MAIN();

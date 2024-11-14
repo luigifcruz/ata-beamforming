@@ -14,6 +14,7 @@ class BLADE_API Polarizer : public Module {
     struct Config {
         POL inputPolarization = POL::XY;
         POL outputPolarization = POL::LR;
+
         U64 blockSize = 512;
     };
 
@@ -44,7 +45,9 @@ class BLADE_API Polarizer : public Module {
     // Taint Registers
 
     constexpr Taint getTaint() const {
-        return Taint::MODIFIER;
+        return Taint::CONSUMER |
+               Taint::PRODUCER |
+               Taint::MODIFIER;
     }
 
     std::string name() const {
@@ -62,12 +65,6 @@ class BLADE_API Polarizer : public Module {
     const Config config;
     const Input input;
     Output output;
-
-    // Expected Shape
-
-    const ArrayShape getOutputBufferShape() const {
-        return getInputBuffer().shape();
-    }
 };
 
 }  // namespace Blade::Modules

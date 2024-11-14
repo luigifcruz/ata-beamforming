@@ -12,6 +12,7 @@ static void BM_Channelizer_Compute(bm::State& state) {
 
 BENCHMARK(BM_Channelizer_Compute)
     ->Iterations(2<<13)
-    ->Args({16, 8192})
+    ->Args({16, 192, 8192, 2, 8192})
+    ->Args({28, 1, 65536, 2, 65536})
     ->UseManualTime()
     ->Unit(bm::kMillisecond);

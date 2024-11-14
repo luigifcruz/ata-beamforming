@@ -16,9 +16,9 @@ use of just-in-time (JIT) compilation of CUDA kernels to deliver accelerated pro
 with runtime customizability. Python bindings are also available.
 
 Blade is organized in Modules, Pipelines, and Runners. A Module is a unit that does the
-data manipulation, for example, a Cast module converts an array of elements from a type
+data manipulation, for example, a Caster module converts an array of elements from a type
 to another (e.g. Integer to Float). A Pipeline is a collection of Modules working
-together, for example, using a Cast module to convert each element type before
+together, for example, using a Caster module to convert each element type before
 processing the data with a Channelizer module. A Runner is a helper class that will
 create multiple instances of a Pipeline and executes them in parallel to take advantage
 of all resources provided by the GPU.

@@ -10,7 +10,7 @@ import astropy.units as u
 
 @bl.runner
 class Pipeline:
-    def __init__(self, in_shape, out_shape, config_b, config_gather, config_h):
+    def __init__(self, in_shape, out_shape, config_b, config_stacker, config_h):
         self.input.dut = bl.tensor(1, dtype=bl.f64, device=bl.cpu)
         self.input.date = bl.tensor(1, dtype=bl.f64, device=bl.cpu)
         self.input.buffer = bl.array_tensor(in_shape, dtype=bl.cf32)
@@ -18,16 +18,18 @@ class Pipeline:
 
         input = (self.input.dut, self.input.date, self.input.buffer)
         self.module.mode_b = bl.module(bl.modeb, config_b, input, telescope=bl.ata)
-        self.module.gather = bl.module(bl.gather, config_gather, self.module.mode_b.get_output(), ot=bl.cf32)
-        self.module.mode_h = bl.module(bl.modeh, config_h, self.module.gather.get_output(), ot=bl.f32)
+        self.module.stacker = bl.module(bl.stacker, config_stacker, self.module.mode_b.get_output(), ot=bl.cf32)
+        self.module.mode_h = bl.module(bl.modeh, config_h, self.module.stacker.get_output(), ot=bl.f32)
 
     def transfer_in(self, dut, date, buffer):
         self.copy(self.input.dut, dut)
         self.copy(self.input.date, date)
         self.copy(self.input.buffer, buffer)
 
-    def transfer_out(self, buffer):
+    def transfer_result(self):
         self.copy(self.output.buffer, self.module.mode_h.get_output())
+
+    def transfer_out(self, buffer):
         self.copy(buffer, self.output.buffer)
 
 
@@ -100,11 +102,11 @@ if __name__ == "__main__":
         'beamformer_incoherent_beam': False,
 
         'detector_enable': False,
-        'detector_integration_size': 1,
+        'detector_integration_rate': 1,
         'detector_number_of_output_polarizations': 1,
     }
 
-    config_gather = {
+    config_stacker = {
         'axis': 2,
         'multiplier': 4,
     }
@@ -115,7 +117,7 @@ if __name__ == "__main__":
 
         'polarizer_convert_to_circular': True,
 
-        'detector_integration_size': 1,
+        'detector_integration_rate': 1,
         'detector_number_of_output_polarizations': 1,
     }
 
@@ -135,7 +137,7 @@ if __name__ == "__main__":
     # Blade Implementation
     #
 
-    pipeline = Pipeline(b_in_shape, h_out_shape, config_b, config_gather, config_h)
+    pipeline = Pipeline(b_in_shape, h_out_shape, config_b, config_stacker, config_h)
 
     bl_input_date[0] = (1649366473.0/ 86400) + 2440587.5
     bl_input_dut[0] = 0.0
@@ -153,6 +155,11 @@ if __name__ == "__main__":
             pipeline.transfer_in(host_input_dut, host_input_date, host_input_buffer)
             return bl.result.success
 
+        # Define the result callback function
+        def result_callback():
+            pipeline.transfer_result()
+            return bl.result.success
+
         # Define the output callback function
         def output_callback():
             dequeue_count[0] += 1
@@ -160,7 +167,7 @@ if __name__ == "__main__":
             return bl.result.success
 
         # Enqueue the pipeline with the input and output callbacks and the current enqueue count
-        pipeline.enqueue(input_callback, output_callback, enqueue_count[0], dequeue_count[0])
+        pipeline.enqueue(input_callback, result_callback, output_callback, enqueue_count[0], dequeue_count[0])
 
         # Define the dequeue callback function
         def callback(input_id, output_id, did_output):

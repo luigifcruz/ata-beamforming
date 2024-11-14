@@ -65,10 +65,16 @@ class BLADE_API Pipeline {
 
     Result compute(const U64& index);
     Result synchronize(const U64& index);
+    Result record(const U64& index);
+    Result wait(const U64& index, const U64& waitForIndex);
     bool isSynchronized(const U64& index);
 
     const Stream& stream(const U64& index = 0) const {
         return _streams[index];
+    }
+
+    const Event& events(const U64& index = 0) const {
+        return _events[index];
     }
 
     U64 numberOfStreams() const {
@@ -78,6 +84,7 @@ class BLADE_API Pipeline {
  private:
     bool _commited;
     std::vector<Stream> _streams;
+    std::vector<Event> _events;
     std::vector<std::shared_ptr<Module>> _modules;
 
     U64 _computeStepCount;

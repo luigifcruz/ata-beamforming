@@ -20,7 +20,7 @@ void NB_SUBMODULE(auto& m, const auto& in_name, const auto& out_name) {
     nb::class_<typename Class::Config>(mod, "config")
         .def(nb::init<const U64&,
                       const U64&,
-                      const U64&>(), "integration_size"_a,
+                      const U64&>(), "integration_rate"_a,
                                      "number_of_output_polarizations"_a,
                                      "block_size"_a = 512);
 

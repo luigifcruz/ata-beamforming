@@ -1,5 +1,5 @@
-#ifndef BENCHMARKS_BUNDLES_ATA_MODEB_H
-#define BENCHMARKS_BUNDLES_ATA_MODEB_H
+#ifndef BENCHMARKS_BUNDLES_ATA_MODE_B_H
+#define BENCHMARKS_BUNDLES_ATA_MODE_B_H
 
 #include "blade/base.hh"
 #include "blade/bundles/ata/mode_b.hh"
@@ -34,8 +34,12 @@ class Benchmark : public Runner {
         return Result::SUCCESS;
     }
 
-    Result transferOut(ArrayTensor<Device::CPU, OT>& cpuOutputBuffer) {
+    Result transferResult() {
         BL_CHECK(this->copy(outputBuffer, modeB->getOutputBuffer()));
+        return Result::SUCCESS;
+    }
+
+    Result transferOut(ArrayTensor<Device::CPU, OT>& cpuOutputBuffer) {
         BL_CHECK(this->copy(cpuOutputBuffer, outputBuffer));
         return Result::SUCCESS;
     }
@@ -111,7 +115,7 @@ class BenchmarkRunner {
             .beamformerIncoherentBeam = true,
 
             .detectorEnable = true,
-            .detectorIntegrationSize = 1,
+            .detectorIntegrationRate = 1,
             .detectorNumberOfOutputPolarizations = 1,
         };
         pipeline = std::make_shared<Benchmark<IT, OT>>(config);
@@ -134,13 +138,16 @@ class BenchmarkRunner {
                 const U64 i = enqueueCount++ % 2;
                 return pipeline->transferIn(inputDut1[i], inputJulianDate[i], inputBuffer[i]);
             };
+            auto resultCallback = [&](){
+                return pipeline->transferResult();
+            };
             auto outputCallback = [&](){
                 const U64 i = dequeueCount++ % 2;
                 return pipeline->transferOut(outputBuffer[i]);
             };
-            BL_CHECK(pipeline->enqueue(inputCallback, outputCallback, enqueueCount, dequeueCount));
+            BL_CHECK(pipeline->enqueue(inputCallback, resultCallback, outputCallback, enqueueCount, dequeueCount));
 
-            BL_CHECK(pipeline->dequeue([&](const U64& inputId, 
+            BL_CHECK(pipeline->dequeue([&](const U64& inputId,
                                            const U64& outputId,
                                            const bool& didOutput){
                 if (didOutput) {

@@ -3,15 +3,17 @@
 #define BLADE_BUILD_TYPE "@build_type@"
 
 // Generic Modules
-#mesondefine BLADE_MODULE_CAST
+#mesondefine BLADE_MODULE_CASTER
 #mesondefine BLADE_MODULE_CHANNELIZER
 #mesondefine BLADE_MODULE_DETECTOR
+#mesondefine BLADE_MODULE_CORRELATOR
 #mesondefine BLADE_MODULE_BFR5
 #mesondefine BLADE_MODULE_GUPPI
 #mesondefine BLADE_MODULE_POLARIZER
-#mesondefine BLADE_MODULE_GATHER
-#mesondefine BLADE_MODULE_DUPLICATE
-#mesondefine BLADE_MODULE_PERMUTATION
+#mesondefine BLADE_MODULE_STACKER
+#mesondefine BLADE_MODULE_DUPLICATOR
+#mesondefine BLADE_MODULE_PERMUTATOR
+#mesondefine BLADE_MODULE_INTEGRATOR
 
 // ATA Specific Modules
 #mesondefine BLADE_MODULE_ATA_BEAMFORMER
@@ -28,6 +30,7 @@
 
 // Generic Pipelines
 #mesondefine BLADE_BUNDLE_GENERIC_MODE_H
+#mesondefine BLADE_BUNDLE_GENERIC_MODE_X
 
 // Dependency Loaders
 #mesondefine BLADE_LOADER_RADIOINTERFEROMETRY
